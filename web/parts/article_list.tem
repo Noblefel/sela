@@ -1,0 +1,47 @@
+{{ define "article_list" }}
+<!-- styling is separated because the renderer parse all head define even when not used -->
+<div class="article-list">
+  {{ range . }}
+  <article>
+    {{if .Image }}
+    <img src="/images/{{ .Image | forwardslash }}" />
+    {{ end }}
+
+    <h1>
+      <a href="/a/{{ .Slug }}">
+        {{.Title}}
+      </a>
+    </h1>
+
+    <div class="below-title">
+      <!-- prettier-ignore -->
+      <img src="{{ avatar .User.Avatar | forwardslash }}" referrerpolicy="no-referrer" />
+      <a href="/u/@{{.User.Username}}">{{ .User.Name }}</a>
+      <span>·</span>
+      <p>{{ .CreatedAt.Format "02 January 2006" }}</p>
+      <span>·</span>
+      <p>532 views</p>
+    </div>
+
+    <p class="excerpt">{{.Excerpt}}</p>
+
+    <div class="actions">
+      <button class="button">
+        <i class="material-symbols-outlined">favorite</i>
+        <span>Be the first</span>
+      </button>
+      <button class="button">
+        <i class="material-symbols-outlined">comment</i>
+        <span>Be the first</span>
+      </button>
+      <button class="button sec">Read article</button>
+    </div>
+  </article>
+  {{else}}
+  <div class="empty">
+    <i class="material-symbols-outlined">contract_delete</i>
+    <p>Whoops! No article found</p>
+  </div>
+  {{ end }}
+</div>
+{{ end }}

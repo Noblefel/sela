@@ -1,0 +1,29 @@
+{{template "layout" .}}
+
+{{define "head"}}
+<title>Auth</title>
+<link rel="stylesheet" href="/static/css/auth.css" />
+{{ end }}
+
+{{define "content"}}
+<form class="container" method="POST" action="/auth/force">
+  <h1>Welcome</h1>
+
+  <a class="button google" href="/auth/google">
+    <img
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/250px-Google_Favicon_2025.svg.png"
+      height="30px"
+    />
+    login with Google
+  </a>
+
+  <hr />
+
+  <label for="">user id (debug)</label>
+  <div class="input-group">
+    <input type="number" name="id" value="1" />
+  </div>
+
+  <button type="submit" class="button sec">Force login (debug)</button>
+</form>
+{{ end }}

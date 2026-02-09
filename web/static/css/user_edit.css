@@ -1,0 +1,92 @@
+main {
+  form {
+    margin: 2rem auto;
+    display: grid;
+    grid-template-columns: 1fr 11fr;
+    gap: 2rem;
+
+    .avatar-uploader {
+      position: relative;
+      border-radius: 50%;
+      height: 100px;
+      width: 100px;
+
+      img,
+      input {
+        object-position: center;
+        object-fit: cover;
+        border-radius: 50%;
+        height: 100%;
+        width: 100%;
+      }
+
+      input {
+        z-index: 4;
+        position: absolute;
+        cursor: pointer;
+        opacity: 0;
+        left: 0;
+      }
+
+      &:hover {
+        filter: brightness(0.9);
+      }
+    }
+
+    .input-group {
+      margin-bottom: 0.5rem;
+    }
+
+    .input-group input {
+      background-color: transparent;
+      padding: 0.4rem 0 !important;
+      outline: 0 !important;
+      border: 0 !important;
+    }
+
+    #name {
+      font-weight: 900;
+      font-size: 1.5rem;
+    }
+
+    .at {
+      margin-right: 4px;
+      translate: 0 0.25rem;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--sec);
+    }
+
+    #username {
+      font-weight: bold;
+      font-size: 1.25rem;
+    }
+
+    .info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: 1rem;
+    }
+
+    .info i {
+      color: var(--sec);
+    }
+
+    .actions {
+      display: flex;
+      gap: 1em;
+      padding: 0.75rem 0;
+    }
+  }
+}
+
+@media (width < 850px) {
+  main {
+    form {
+      grid-template-columns: 1fr;
+    }
+  }
+}

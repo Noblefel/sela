@@ -1,0 +1,202 @@
+* {
+  font-family: "Andada Pro";
+  box-sizing: border-box;
+  margin: 0;
+}
+
+:root {
+  font-size: 17px;
+  color: rgba(0, 0, 0, 0.75);
+
+  --pri: palevioletred;
+  --sec: rgb(163, 60, 94);
+}
+
+body {
+  background-color: color-mix(in srgb, violet, white 92%);
+  border-top: 5px solid var(--pri);
+
+  > .background {
+    position: absolute;
+    z-index: -1;
+    height: 100%;
+    width: 100%;
+
+    opacity: 0.65;
+    background-image: url("/static/background.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+}
+
+h1 {
+  font-weight: 800;
+  line-height: 150%;
+}
+
+a {
+  color: black;
+  cursor: pointer;
+
+  &:is(.button), &:has(i) {
+    text-decoration: none;
+  }
+}
+
+p {
+  line-height: 1.75rem;
+}
+
+.button {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  color: var(--sec);
+  background-color: color-mix(in srgb, var(--pri), white 90%);
+  border: 3px solid color-mix(in srgb, var(--pri), white 70%);
+  border-radius: 8px;
+
+  &:hover {
+    filter: brightness(0.95);
+  }
+
+  &.sec {
+    border-color: rgba(0, 0, 0, 0.2);
+    background-color: var(--sec);
+    color: white;
+  }
+
+  &:has(i) {
+    display: flex;
+    padding-left: 0.4rem;
+    align-items: center;
+    gap: 0.35rem;
+  }
+}
+
+label {
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+}
+
+.input-group {
+  position: relative;
+  display: flex;
+  margin: 0.25rem 0 1rem 0;
+
+  input,
+  textarea,
+  select {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding: 1rem;
+    transition: 0.2s all ease;
+
+    outline: 3px solid transparent;
+    inline-size: 100%;
+    resize: none;
+    height: min-content;
+    appearance: none;
+
+    line-height: 150%;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.75);
+
+    &::placeholder {
+      color: rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: 2px solid var(--pri);
+  }
+
+  &:has(i) input {
+    padding-left: 2.5rem;
+  }
+
+  &:has(i) > i {
+    opacity: 0.5;
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+.toast {
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  max-width: calc(100dvw - 4rem);
+
+  font-size: 1.1rem;
+  padding: 0.75rem 1.5rem 0.75rem 1rem;
+  min-width: 250px;
+  opacity: 0;
+
+  animation: toast 0.5s ease 0.5s forwards, toast-leave 0.5s ease 4s forwards;
+  border: 4px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+
+  p,
+  i {
+    color: white;
+  }
+
+  &.success {
+    background-color: forestgreen;
+  }
+
+  &.error {
+    background-color: firebrick;
+  }
+}
+
+@keyframes toast {
+  0% {
+    opacity: 0;
+    transform: translateY(3rem);
+  }
+
+  1% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-leave {
+  0% {
+    opacity: 1;
+  }
+
+  90% {
+    z-index: 100;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-2rem);
+    z-index: -1;
+  }
+}
+
+@media (width <= 825px) {
+  :root {
+    font-size: 15px;
+  }
+}

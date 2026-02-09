@@ -1,0 +1,67 @@
+@import url("./article_list.css");
+
+main {
+  header {
+    margin: 2rem auto;
+    display: grid;
+    grid-template-columns: 1fr 11fr;
+    gap: 0.5rem 2rem;
+
+    img {
+      object-position: center;
+      object-fit: cover;
+      border-radius: 50%;
+      height: 100px;
+      width: 100px;
+    }
+
+    .username {
+      margin-top: -4px;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .actions {
+      margin: 0.5rem 0;
+      display: flex; 
+      gap: 1rem;
+    }
+
+    .bio {
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+
+    .stats {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .stats p {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .stats i {
+      color: var(--sec);
+    }
+  }
+
+  .tabs {
+    margin: 2rem 0 1rem 0;
+    display: flex;
+    gap: 1rem;
+  }
+}
+
+@media (width < 850px) {
+  main {
+    header {
+      grid-template-columns: 1fr;
+    }
+  }
+}

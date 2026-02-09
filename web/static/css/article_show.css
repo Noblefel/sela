@@ -1,0 +1,75 @@
+@import url("./editor.css");
+
+main {
+  header {
+    padding-top: 1rem;
+    margin-bottom: 2rem;
+
+    > img {
+      background-color: rgba(0, 0, 0, 0.1);
+      height: 100%;
+      max-height: 350px;
+      width: 100%;
+      border-radius: 12px;
+      object-fit: contain;
+    }
+
+    h1 {
+      margin: 1.2rem 0;
+      font-weight: 900;
+      font-size: clamp(1.5rem, calc(0.8rem + 1.8vw), 2.25rem);
+      text-align: center;
+    }
+
+    .below-title {
+      width: 100%;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      overflow: auto;
+
+      .flex {
+        display: flex;
+        gap: 1.25rem;
+        align-items: center;
+        justify-content: center;
+        min-width: max-content;
+      }
+
+      .flex > div {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      img {
+        object-position: center;
+        object-fit: cover;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+      }
+    }
+
+    .actions {
+      display: flex;
+      gap: 1rem;
+      overflow: auto;
+      justify-content: center;
+    }
+  }
+
+  #excerpt {
+    padding: 1.25rem;
+    font-size: 1.05rem;
+    line-height: 2rem;
+
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--sec);
+    border-left: 8px solid var(--sec);
+    border-radius: 12px;
+  }
+
+  #content {
+    margin: 5rem 0;
+  }
+}

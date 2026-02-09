@@ -1,0 +1,124 @@
+{{template "layout" .}}
+
+{{define "head"}}
+<title>Write an article</title>
+<link rel="stylesheet" href="/static/css/article_create.css" />
+{{ end }}
+
+{{define "content"}}
+<form action="/articles" method="POST" enctype="multipart/form-data">
+  {{$form := index . "form"}}
+
+  <div id="uploader">
+    <div class="text">
+      <i class="material-symbols-outlined">upload_2</i>
+      <label>drag your image here or click to upload</label>
+    </div>
+
+    <img alt="article image preview" />
+    <input type="file" name="image" accept=".png,.jpg,.jpeg,.svg" />
+  </div>
+
+  <label for="title">Title</label>
+
+  <!-- prettier-ignore -->
+  <div class="input-group">
+    <textarea
+      rows="1"
+      name="title"
+      placeholder="Write your title here..."
+      required maxlength="148">{{ $form.Title }}</textarea>
+  </div>
+
+  <label for="excerpt">
+    Excerpt
+    <span class="tips">to be shown under the title</span>
+  </label>
+
+  <!-- prettier-ignore -->
+  <div class="input-group">
+    <textarea 
+      name="excerpt" 
+      placeholder="Write your excerpt here..." 
+      maxlength="498">{{ $form.Excerpt }}</textarea>
+  </div>
+
+  <label for="content">
+    Content
+    <span class="tips"> Use formatting to make the most of it </span>
+  </label>
+
+  {{ template "editor" $form.Content }}
+
+  <input type="hidden" id="content" name="content" />
+
+  <div class="actions">
+    <button type="button" class="button" onclick="history.back()">
+      <i class="material-symbols-outlined">close</i>
+      <span>Cancel</span>
+    </button>
+
+    <button type="submit" class="button sec">
+      <i class="material-symbols-outlined">done</i>
+      <span>Submit</span>
+    </button>
+  </div>
+</form>
+
+<script>
+  const form = document.querySelector("main form");
+  const content = form.querySelector("#content");
+  // hard coded this so i don't deal with global variable
+  const editor = form.querySelector("#editor");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    content.value = editor.firstChild.getHTML();
+    if (content.value.length < 100) {
+      alert("content is too short");
+      return;
+    }
+
+    form.submit();
+  });
+
+  const uploader = form.querySelector("#uploader");
+  const input = uploader.querySelector("input");
+  const img = uploader.querySelector("img");
+
+  input.addEventListener("change", () => {
+    if (!input.files.length) return;
+
+    const file = input.files[0];
+    const t = file.type.toLowerCase();
+
+    if (
+      !t.includes("jpg") &&
+      !t.includes("png") &&
+      !t.includes("svg") &&
+      !t.includes("jpeg")
+    ) {
+      alert("file not supported");
+      deleteimg();
+      return;
+    }
+
+    if (file.size > 2 << 20) {
+      alert("image is too big");
+      deleteimg();
+      return;
+    }
+
+    img.onclick = deleteimg;
+    img.src = URL.createObjectURL(file);
+    img.classList.add("preview");
+  });
+
+  function deleteimg() {
+    input.value = "";
+    input.files = null;
+    img.classList.remove("preview");
+  }
+</script>
+{{ end }}

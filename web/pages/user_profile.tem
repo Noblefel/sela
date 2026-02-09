@@ -1,0 +1,72 @@
+{{template "layout" .}}
+
+{{define "head"}}
+<title>User profile</title>
+<link rel="stylesheet" href="/static/css/user_profile.css" />
+{{ end }}
+
+{{define "content"}}
+{{$user := index . "user"}}
+{{$auth := index . "auth"}}
+<header>
+  <div>
+    <img
+      src="{{ avatar $user.Avatar | forwardslash }}"
+      referrerpolicy="no-referrer"
+      alt="user profile avatar"
+    />
+  </div>
+  <div class="text">
+    <h1>{{ $user.Name }}</h1>
+    <p class="username">@{{ $user.Username }}</p>
+
+    {{if $user.Authorize $auth}}
+    <div class="actions">
+      <a href="/users/{{ $user.Id }}/edit" class="button">
+        <i class="material-symbols-outlined">edit</i>
+        <span>Edit</span>
+      </a>
+      <a href="" class="button">
+        <i class="material-symbols-outlined">settings</i>
+        <span>Settings</span>
+      </a>
+    </div>
+    {{ end }}
+
+    <p class="bio">{{ $user.Bio }}</p>
+
+    <div class="stats">
+      <p>
+        <i class="material-symbols-outlined">calendar_month</i>
+        <span>Joined at {{ $user.CreatedAt.Format "02 January 2006" }}</span>
+      </p>
+      <p>
+        <i class="material-symbols-outlined">contract</i>
+        <span>23 Post created</span>
+      </p>
+    </div>
+  </div>
+</header>
+
+<div class="tabs">
+  <a class="button sec">
+    <i class="material-symbols-outlined">contract</i>
+    <span>Articles</span>
+  </a>
+  <a class="button">
+    <i class="material-symbols-outlined">comment</i>
+    <span>Comments</span>
+  </a>
+
+  {{if $user.Authorize $auth}}
+  <a class="button">
+    <i class="material-symbols-outlined">favorite</i>
+    <span>Favorite</span>
+  </a>
+  {{ end }}
+</div>
+
+<section id="articles-history">
+  {{template "article_list" index . "articles"}}
+</section>
+{{ end }}

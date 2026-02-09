@@ -1,0 +1,120 @@
+.editor-tools {
+  display: flex;
+  gap: 1rem;
+  overflow: auto;
+
+  margin: 1rem 0 2rem 0;
+  padding: 2rem 0.75rem 0.75rem 0.75rem;
+  position: sticky;
+  top: 1rem;
+  z-index: 4;
+
+  background-color: white;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+
+  > div {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+    position: relative;
+
+    span {
+      position: absolute;
+      top: -1.25rem;
+      left: 0.5rem;
+
+      font-size: 0.8rem;
+      font-weight: bold;
+      opacity: 0.75;
+    }
+  }
+
+  .text-size button {
+    padding: 0.3rem 0.5rem;
+    font-size: 1.2rem;
+    opacity: 0.75;
+  }
+
+  .text-style button.b i {
+    font-weight: bold;
+  }
+
+  button {
+    background-color: transparent;
+    cursor: pointer;
+    border-radius: 6px;
+    border: 0;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    i {
+      font-size: 1.5rem;
+      opacity: 0.75;
+      margin-top: 3px;
+    }
+  }
+
+  .separator {
+    width: 1px;
+    margin-top: -5px;
+    margin-bottom: 5px;
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+}
+
+.editor-content {
+  font-size: 1.18rem;
+  padding-bottom: 4rem;
+
+  &::selection {
+    background-color: color-mix(in srgb, var(--pri), transparent 50%);
+  }
+
+  h1,
+  h2,
+  h3,
+  strong {
+    font-weight: 800;
+  }
+
+  h1,
+  h2,
+  h3 {
+    margin-bottom: 1rem;
+    line-height: 150%;
+  }
+
+  h1 {
+    font-size: 1.45rem;
+  }
+
+  h2 {
+    font-size: 1.35rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  p {
+    line-height: 2.25rem;
+    margin-bottom: 2rem;
+  }
+
+  ul,
+  ol {
+    margin-bottom: 2rem;
+
+    p {
+      margin-bottom: 1rem;
+      line-height: 2rem;
+    }
+  }
+
+  .tiptap:focus {
+    outline: 0;
+  }
+}

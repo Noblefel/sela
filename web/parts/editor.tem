@@ -1,0 +1,109 @@
+{{ define "editor" }}
+<div class="editor-tools">
+  <div class="text-size">
+    <span>Text size</span>
+    <button id="editor_h1" type="button">H1</button>
+    <button id="editor_h2" type="button">H2</button>
+    <button id="editor_h3" type="button">H3</button>
+    <button id="editor_p" type="button">P</button>
+  </div>
+
+  <div class="separator"></div>
+
+  <div class="text-style">
+    <span>Text style</span>
+    <button id="editor_bold" type="button" class="b">
+      <i class="material-symbols-outlined">format_bold</i>
+    </button>
+    <button id="editor_italic" type="button">
+      <i class="material-symbols-outlined">format_italic</i>
+    </button>
+    <button id="editor_strike" type="button">
+      <i class="material-symbols-outlined">format_strikethrough</i>
+    </button>
+    <button id="editor_ul" type="button">
+      <i class="material-symbols-outlined">format_list_bulleted</i>
+    </button>
+    <button id="editor_li" type="button">
+      <i class="material-symbols-outlined">format_list_numbered</i>
+    </button>
+  </div>
+
+  <div class="separator"></div>
+
+  <div class="alignments">
+    <span>Alignments</span>
+    <button id="editor_align_left" type="button">
+      <i class="material-symbols-outlined"> format_align_left </i>
+    </button>
+    <button id="editor_align_center" type="button">
+      <i class="material-symbols-outlined"> format_align_center </i>
+    </button>
+    <button id="editor_align_right" type="button">
+      <i class="material-symbols-outlined"> format_align_right </i>
+    </button>
+    <button id="editor_align_justify" type="button">
+      <i class="material-symbols-outlined"> format_align_justify </i>
+    </button>
+  </div>
+</div>
+
+<!-- hard coded this so i don't deal with global variable -->
+<div id="editor" class="editor-content"></div>
+
+<script type="module">
+  import { Editor } from "https://esm.sh/@tiptap/core";
+  import StarterKit from "https://esm.sh/@tiptap/starter-kit";
+  import TextAlign from "https://esm.sh/@tiptap/extension-text-align";
+
+  const content = "{{.}}" == "" ? "Write something here..." : "{{.}}";
+
+  const editor = new Editor({
+    element: document.querySelector("#editor"),
+    extensions: [
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
+      StarterKit,
+    ],
+    content: content,
+  });
+
+  document.querySelector("#editor_h1").onclick = () =>
+    editor.chain().focus().toggleHeading({ level: 1 }).run();
+
+  document.querySelector("#editor_h2").onclick = () =>
+    editor.chain().focus().toggleHeading({ level: 2 }).run();
+
+  document.querySelector("#editor_h3").onclick = () =>
+    editor.chain().focus().toggleHeading({ level: 3 }).run();
+
+  document.querySelector("#editor_p").onclick = () =>
+    editor.chain().focus().setParagraph().run();
+
+  document.querySelector("#editor_bold").onclick = () =>
+    editor.chain().focus().toggleBold().run();
+
+  document.querySelector("#editor_italic").onclick = () =>
+    editor.chain().focus().toggleItalic().run();
+
+  document.querySelector("#editor_strike").onclick = () =>
+    editor.chain().focus().toggleStrike().run();
+
+  document.querySelector("#editor_ul").onclick = () =>
+    editor.chain().focus().toggleBulletList().run();
+
+  document.querySelector("#editor_li").onclick = () =>
+    editor.chain().focus().toggleOrderedList().run();
+
+  document.querySelector("#editor_align_left").onclick = () =>
+    editor.chain().focus().setTextAlign("left").run();
+
+  document.querySelector("#editor_align_center").onclick = () =>
+    editor.chain().focus().setTextAlign("center").run();
+
+  document.querySelector("#editor_align_right").onclick = () =>
+    editor.chain().focus().setTextAlign("right").run();
+
+  document.querySelector("#editor_align_justify").onclick = () =>
+    editor.chain().focus().setTextAlign("justify").run();
+</script>
+{{ end }}

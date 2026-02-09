@@ -1,0 +1,77 @@
+{{template "layout" .}}
+
+{{define "head"}}
+{{$article := index . "article"}}
+<title>{{ $article.Title }}</title>
+<link rel="stylesheet" href="/static/css/article_show.css" />
+{{ end }}
+
+{{define "content"}}
+{{$article := index . "article"}}
+{{$created := $article.CreatedAt }}
+<header>
+  {{if $article.Image}}
+  <img
+    src="/images/{{ $article.Image | forwardslash }}"
+    alt="article current image preview"
+    class="preview"
+  />
+  {{ end }}
+
+  <h1>{{ $article.Title }}</h1>
+
+  <div class="below-title">
+    <div class="flex">
+      <div>
+        <img
+          src="{{ avatar $article.User.Avatar | forwardslash }}"
+          referrerpolicy="no-referrer"
+          alt="author's profile avatar"
+        />
+        <a href="/u/@{{ $article.User.Username }}">{{ $article.User.Name }}</a>
+      </div>
+      <div>
+        <i class="material-symbols-outlined">visibility</i>
+        <p>532 views</p>
+      </div>
+      <div>
+        <i class="material-symbols-outlined">calendar_month</i>
+        <p>{{ $created.Format "02 January 2006" }} ({{ since $created }})</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="button">
+      <i class="material-symbols-outlined">favorite</i>
+      <span>Be the first</span>
+    </button>
+
+    <button class="button">
+      <i class="material-symbols-outlined">chat</i>
+      <span>Be the first</span>
+    </button>
+
+    <button class="button sec">
+      <i class="material-symbols-outlined">bookmark</i>
+      <span>Saved</span>
+    </button>
+
+    {{ if $article.Authorize (index . "auth") }}
+    <a class="button" href="/articles/{{ $article.Id }}/edit">
+      <i class="material-symbols-outlined">edit</i>
+      <span>Edit</span>
+    </a>
+    {{ end }}
+  </div>
+</header>
+
+{{if $article.Excerpt}}
+<section id="excerpt">{{ $article.Excerpt }}</section>
+{{ end }}
+
+<section id="content" class="editor-content">
+  {{ $article.Content | html }}
+</section>
+
+{{ end }}

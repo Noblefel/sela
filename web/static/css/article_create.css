@@ -1,0 +1,54 @@
+@import url("./uploader.css");
+@import url("./editor.css");
+
+main {
+  padding-bottom: 5rem;
+
+  form {
+    .input-group textarea {
+      font-size: 2rem;
+      background-color: transparent;
+      border: 0;
+      outline: 0;
+      padding: 1rem 0;
+
+      &:focus {
+        outline: 0;
+      }
+
+      &[name="title"] {
+        font-weight: 900;
+      }
+
+      &[name="excerpt"] {
+        font-size: 1.1rem;
+      }
+    }
+  }
+
+  .tips {
+    margin: 5px 0 0 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    opacity: 0.5;
+  }
+
+  .actions {
+    position: sticky;
+    bottom: 1.5rem;
+
+    display: flex;
+    justify-content: end;
+    gap: 1em;
+    z-index: 5;
+    padding: 0.75rem;
+
+    background-color: white;
+    border-radius: 12px;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+
+    p {
+      margin: auto 0;
+    }
+  }
+}

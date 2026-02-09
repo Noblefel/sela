@@ -1,0 +1,127 @@
+{{template "layout" .}}
+
+{{define "head"}}
+<title>User profile</title>
+<link rel="stylesheet" href="/static/css/user_edit.css" />
+{{ end }}
+
+{{define "content"}}
+{{$user := index . "user"}}
+<form method="post" action="/users/{{ $user.Id }}/delete">
+  <button class="sec">Delete accont</button>
+</form>
+<form
+  method="post"
+  action="/users/{{ $user.Id }}/update"
+  enctype="multipart/form-data"
+>
+  <div>
+    <div class="avatar-uploader">
+      <img
+        src="{{ avatar $user.Avatar | forwardslash }}"
+        referrerpolicy="no-referrer"
+        alt="your profile avatar"
+      />
+      <input type="file" name="avatar" accept=".png,.jpg,.jpeg,.svg" />
+    </div>
+  </div>
+  <div>
+    <label for="name">Name</label>
+    <div class="input-group">
+      <input
+        type="text"
+        name="name"
+        id="name"
+        value="{{ $user.Name }}"
+        maxlength="100"
+      />
+    </div>
+
+    <label for="username">Username</label>
+    <div class="input-group">
+      <span class="at">@</span>
+      <input
+        type="text"
+        name="username"
+        id="username"
+        value="{{ $user.Username }}"
+        maxlength="40"
+        pattern="[a-zA-Z0-9\s\-_]+"
+      />
+    </div>
+    <p class="info">
+      <i class="material-symbols-outlined">info</i>
+      <span>Only letters, numbers, and strips allowed</span>
+    </p>
+
+    <label for="bio">Bio</label>
+    <div class="input-group">
+      <!-- prettier-ignore -->
+      <textarea
+        type="text"
+        name="bio"
+        id="bio"
+        maxlength="249">{{ $user.Bio }}</textarea>
+    </div>
+
+    <p class="info">
+      <i class="material-symbols-outlined">calendar_month</i>
+      <span> Joined at {{ $user.CreatedAt.Format "02 January 2006"}} </span>
+    </p>
+    <p class="info">
+      <i class="material-symbols-outlined">calendar_month</i>
+      <span> Last update {{ $user.UpdatedAt.Format "02 January 2006"}} </span>
+    </p>
+    <p class="info">
+      <i class="material-symbols-outlined">info</i>
+      <span>To delete account, go to settings</span>
+    </p>
+
+    <div class="actions">
+      <button type="button" class="button" onclick="history.back()">
+        <i class="material-symbols-outlined">close</i>
+        <span>Cancel</span>
+      </button>
+
+      <button type="submit" class="button sec">
+        <i class="material-symbols-outlined">done</i>
+        <span>Save Profile</span>
+      </button>
+    </div>
+  </div>
+</form>
+
+<script>
+  const uploader = document.querySelector(".avatar-uploader");
+  const input = uploader.querySelector("input");
+  const img = uploader.querySelector("img");
+
+  input.addEventListener("change", () => {
+    if (!input.files.length) return;
+
+    const file = input.files[0];
+    const t = file.type.toLowerCase();
+
+    if (
+      !t.includes("jpg") &&
+      !t.includes("png") &&
+      !t.includes("svg") &&
+      !t.includes("jpeg")
+    ) {
+      alert("file not supported");
+      input.value = "";
+      input.files = null;
+      return;
+    }
+
+    if (file.size > 2 << 20) {
+      alert("image is too big");
+      input.value = "";
+      input.files = null;
+      return;
+    }
+
+    img.src = URL.createObjectURL(file);
+  });
+</script>
+{{ end }}

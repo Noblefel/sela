@@ -1,0 +1,47 @@
+@import url("./article_list.css");
+@import url("./pagination.css");
+
+main {
+  form#search {
+    margin: 1rem 0 2rem 0;
+
+    input {
+      padding-left: 4.25rem;
+      border-radius: 35px;
+      font-size: 1.3rem;
+    }
+
+    .input-group i {
+      font-size: 2.25rem;
+      left: 1.25rem;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+
+      .input-group {
+        margin: 0;
+      }
+
+      select {
+        color: rgba(0, 0, 0, 0.6);
+        background-color: white;
+        border-radius: 40px;
+        padding: 0.5rem 1rem;
+        text-transform: capitalize;
+      }
+
+      .button {
+        border-radius: 40px;
+        padding: 0.5rem 1rem;
+      }
+
+      .space {
+        flex: 1;
+      }
+    }
+  }
+}

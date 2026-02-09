@@ -1,0 +1,68 @@
+main .pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  a {
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  .first,
+  .last {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    span {
+      margin-bottom: 2px;
+    }
+
+    i {
+      font-weight: bold;
+      color: var(--sec);
+    }
+  }
+
+  .between {
+    display: flex;
+    gap: 0.75rem;
+
+    a:not(.active) {
+      padding: 0.5rem 0.75rem;
+      background-color: rgba(0, 0, 0, 0.1);
+      color: rgba(0, 0, 0, 0.6);
+      border-radius: 8px;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+
+  .dots {
+    flex: 1;
+    display: flex;
+    margin-bottom: 1.1rem;
+    font-size: 2rem;
+    opacity: 0.5;
+
+    &:first-of-type {
+      justify-content: end;
+    }
+  }
+}
+
+@media (width <= 600px) {
+  main .pagination {
+    a,
+    span {
+      font-size: 0.9rem;
+    }
+
+    .dots {
+      display: none;
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{{template "layout" .}}
+
+{{define "head"}}
+<title>User not found</title>
+<style>
+  main {
+    display: grid;
+    place-content: center;
+    translate: 0 -5rem;
+
+    h1 {
+      font-size: 8rem;
+      color: var(--sec);
+      text-align: center;
+    }
+
+    h3 {
+      text-align: center;
+      font-style: italic;
+    }
+  }
+</style>
+{{ end }}
+
+{{define "content"}}
+<h1>404</h1>
+<h3>The user you are looking for doesn't exist or may have deleted their account</h3>
+{{ end }}

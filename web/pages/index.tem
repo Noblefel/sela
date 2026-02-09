@@ -1,0 +1,27 @@
+{{template "layout" .}}
+
+{{define "head"}}
+<title>Home</title>
+<link rel="stylesheet" href="/static/css/index.css" />
+{{ end }}
+
+{{define "content"}}
+<form id="search" action="/search">
+  <div class="input-group">
+    <i class="material-symbols-outlined">search</i>
+    <input type="text" name="key" placeholder="look for an article..." />
+  </div>
+</form>
+
+<section id="top-read">
+  <h3>Top read this month</h3>
+
+  {{template "article_list" index . "articles_monthly"}}
+</section>
+
+<section id="new">
+  <h3>New articles from today</h3>
+
+  {{template "article_list" index . "articles_new"}}
+</section>
+{{ end }}

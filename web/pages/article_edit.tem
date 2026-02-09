@@ -1,0 +1,177 @@
+{{template "layout" .}}
+
+{{define "head"}}
+<title>Edit article</title>
+<link rel="stylesheet" href="/static/css/article_create.css" />
+{{ end }}
+
+{{define "content"}}
+{{$article := index . "article"}}
+{{$form := index . "form"}}
+
+<form
+  action="/articles/{{ $article.Id }}/update"
+  method="POST"
+  enctype="multipart/form-data"
+>
+  <div id="uploader">
+    <div class="text">
+      <i class="material-symbols-outlined">upload_2</i>
+      <label>drag your image here or click to upload</label>
+    </div>
+
+    {{if $article.Image}}
+    <img
+      src="/images/{{ $article.Image | forwardslash }}"
+      alt="article current image preview"
+      onclick="deleteOriginalImg()"
+      class="preview"
+    />
+    {{else}}
+    <img alt="article image preview" />
+    {{ end }}
+
+    <input type="file" name="image" accept=".png,.jpg,.jpeg,.svg" />
+  </div>
+
+  <label for="title">Title</label>
+
+  <!-- prettier-ignore -->
+  <div class="input-group">
+    <textarea
+      rows="1"
+      name="title"
+      placeholder="Write your title here..."
+      maxlength="148"
+      required>{{ if $form }}{{ $form.Title }}{{ else }}{{ $article.Title }}{{ end }}</textarea>
+  </div>
+
+  <label for="excerpt">
+    Excerpt
+    <span class="tips">to be shown under the title</span>
+  </label>
+
+  <!-- prettier-ignore -->
+  <div class="input-group">
+      <textarea 
+        name="excerpt" 
+        placeholder="Write your excerpt here..."
+        maxlength="498">{{ if $form }}{{ $form.Excerpt }}{{ else }}{{ $article.Excerpt }}{{ end }}</textarea>
+    </div>
+
+  <label for="content">
+    Content
+    <span class="tips"> Use formatting to make the most of it </span>
+  </label>
+
+  {{ if $form }}
+  {{ template "editor" $form.Content }}
+  {{ else }}
+  {{ template "editor" $article.Content }}
+  {{ end }}
+
+  <input type="hidden" id="content" name="content" />
+
+  <div class="actions">
+    <button
+      type="button"
+      class="button sec"
+      style="background-color: firebrick"
+      onclick="deleteArticle()"
+    >
+      <i class="material-symbols-outlined">delete</i>
+      <span>Delete</span>
+    </button>
+
+    <button type="button" class="button" onclick="history.back()">
+      <i class="material-symbols-outlined">close</i>
+      <span>Cancel</span>
+    </button>
+
+    <button type="submit" class="button sec">
+      <i class="material-symbols-outlined">done</i>
+      <span>Submit</span>
+    </button>
+  </div>
+</form>
+
+<script>
+  const form = document.querySelector("main form");
+  const content = form.querySelector("#content");
+  // hard coded this so i don't deal with global variable
+  const editor = form.querySelector("#editor");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    content.value = editor.firstChild.getHTML();
+    if (content.value.length < 100) {
+      alert("content is too short");
+      return;
+    }
+
+    form.submit();
+  });
+
+  const uploader = form.querySelector("#uploader");
+  const input = uploader.querySelector("input");
+  const img = uploader.querySelector("img");
+
+  // Reason for different endpoint is that in the update handler
+  // i can't detect if user deletes image without uploading a new one.
+  function deleteOriginalImg() {
+    if (!confirm("Please save your progress before deleting this image"))
+      return;
+
+    const form = document.createElement("form");
+    document.body.appendChild(form);
+    form.action = "/articles/{{$article.Id}}/delete?image-only=1";
+    form.method = "POST";
+    form.submit();
+  }
+
+  function deleteArticle() {
+    if (!confirm("Are you sure you want to delete this article?")) return;
+
+    const form = document.createElement("form");
+    document.body.appendChild(form);
+    form.action = "/articles/{{$article.Id}}/delete";
+    form.method = "POST";
+    form.submit();
+  }
+
+  input.addEventListener("change", () => {
+    if (!input.files.length) return;
+
+    const file = input.files[0];
+    const t = file.type.toLowerCase();
+
+    if (
+      !t.includes("jpg") &&
+      !t.includes("png") &&
+      !t.includes("svg") &&
+      !t.includes("jpeg")
+    ) {
+      alert("file not supported");
+      deleteimg();
+      return;
+    }
+
+    if (file.size > 2 << 20) {
+      alert("image is too big");
+      deleteimg();
+      return;
+    }
+
+    img.onclick = deleteimg;
+    img.src = URL.createObjectURL(file);
+    img.classList.add("preview");
+  });
+
+  function deleteimg() {
+    input.value = "";
+    input.files = null;
+    img.classList.remove("preview");
+  }
+</script>
+{{ end }}
