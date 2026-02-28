@@ -1,0 +1,49 @@
+{{template "layout" .}}
+
+{{define "head"}}
+<title>Email reset</title>
+<link rel="stylesheet" href="/static/css/auth_reset.css" />
+{{ end }}
+
+{{define "content"}}
+<h2>Verify Email Change</h2>
+<form action="{{index . "page"}}" method="post">
+  <label for="code">Enter the 6 letter code</label>
+  <div class="input-group">
+    <input
+      id="code"
+      name="code"
+      type="text"
+      alt="verification code"
+      required
+      maxlength="6"
+      minlength="6"
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="info">
+    <i class="material-symbols-outlined">info</i>
+    <p>
+      Verification code has been sent to
+      <strong class="email">{{index . "email"}}</strong>
+    </p>
+  </div>
+
+  <div class="info">
+    <i class="material-symbols-outlined">info</i>
+    <p>Go back and try again if the code did not arrive</p>
+  </div>
+
+  <div class="actions">
+    <a href="/settings" class="button sec">
+      <i class="material-symbols-outlined">close</i>
+      <span>Cancel</span>
+    </a>
+    <button class="button change">
+      <i class="material-symbols-outlined">done</i>
+      <span>Verify change</span>
+    </button>
+  </div>
+</form> 
+{{ end }}

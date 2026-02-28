@@ -9,9 +9,13 @@ import (
 	"github.com/Noblefel/sela/internal/types"
 )
 
+func (app *Handlers) Me(w http.ResponseWriter, r *http.Request) {
+	r.SetPathValue("username", app.auth(r).Username)
+	app.UserProfile(w, r)
+}
+
 func (app *Handlers) UserProfile(w http.ResponseWriter, r *http.Request) {
 	username := strings.TrimPrefix(r.PathValue("username"), "@")
-
 	user, err := app.queryUser("WHERE username = $1", username)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -23,16 +27,28 @@ func (app *Handlers) UserProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var (
+		pagination = types.NewPagination(r.URL.Query())
+		queryList  = "WHERE a.user_id = $1 ORDER BY a.created_at DESC "
+		queryTotal = "SELECT COUNT(a.id) FROM articles a WHERE a.user_id = $1"
+	)
+
 	// TODO: change this redundant JOIN query
-	articles, err := app.queryArticles("WHERE a.user_id = $1 ORDER BY a.created_at DESC", user.Id)
+	articles, err := app.queryArticles(queryList+pagination.Query(), user.Id)
 	if err != nil {
 		app.error(w, err)
 		return
 	}
 
+	if err := app.db.QueryRow(queryTotal, user.Id).Scan(&pagination.Total); err != nil {
+		app.error(w, err)
+		return
+	}
+
 	app.view(w, r, "user_profile", map[string]any{
-		"user":     user,
-		"articles": articles,
+		"user":       user,
+		"articles":   articles,
+		"pagination": pagination.WithPages(),
 	})
 }
 
@@ -158,16 +174,27 @@ func (app *Handlers) UserDelete(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
+func (app *Handlers) Settings(w http.ResponseWriter, r *http.Request) {
+	user, err := app.queryUser("WHERE id = $1", app.auth(r).Id)
+	if err != nil {
+		app.error(w, err) // unlikely
+		return
+	}
+
+	app.view(w, r, "user_settings", map[string]any{"user": user})
+}
+
 func (app *Handlers) queryUser(filter string, args ...any) (*types.User, error) {
 	user := new(types.User)
 
 	query := `
-		SELECT id, username, name, COALESCE(bio, ''), COALESCE(avatar, ''), 
+		SELECT id, email, username, name, COALESCE(bio, ''), COALESCE(avatar, ''), 
 			created_at, updated_at 
 		FROM users `
 
 	return user, app.db.QueryRow(query+filter, args...).Scan(
 		&user.Id,
+		&user.Email,
 		&user.Username,
 		&user.Name,
 		&user.Bio,

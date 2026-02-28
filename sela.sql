@@ -33,6 +33,16 @@ INSERT INTO users (email, username, name)
 VALUES ('first@test.com', 'first-user', 'FIRST USER')
 ON CONFLICT (email) DO NOTHING;
 
+CREATE TABLE IF NOT EXISTS reset_emails (
+    token VARCHAR(50) PRIMARY KEY,
+    user_id INT NOT NULL, 
+    code VARCHAR(6) NOT NULL,
+    email VARCHAR NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 -- CREATE TABLE IF NOT EXISTS likes_article (
 --     user_id INT NOT NULL,
 --     article_id INT NOT NULL,

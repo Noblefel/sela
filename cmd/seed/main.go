@@ -126,7 +126,7 @@ func seedArticles(n int) {
 			"The "+spacer.Replace(util.RandomString(50)),
 			uniq,
 			spacer.Replace(util.RandomString(200)),
-			"[]",
+			"",
 			"",
 			randomCreated(-2, 0, 0),
 		))
@@ -139,7 +139,7 @@ func seedArticles(n int) {
 		"The "+spacer.Replace(util.RandomString(50)),
 		fmt.Sprintf("a_%d", t),
 		spacer.Replace(util.RandomString(200)),
-		"[]",
+		"",
 		"",
 		randomCreated(-2, 0, 0),
 	))

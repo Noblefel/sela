@@ -9,7 +9,7 @@
 <form id="search" action="/search">
   <div class="input-group">
     <i class="material-symbols-outlined">search</i>
-    <input type="text" name="key" placeholder="look for an article..." />
+    <input type="search" name="key" placeholder="look for an article..." />
   </div>
 </form>
 

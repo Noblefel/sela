@@ -1,4 +1,5 @@
 @import url("./article_list.css");
+@import url("./pagination.css");
 
 main {
   header {
@@ -19,12 +20,6 @@ main {
       margin-top: -4px;
       font-weight: bold;
       font-size: 1.1rem;
-    }
-
-    .actions {
-      margin: 0.5rem 0;
-      display: flex; 
-      gap: 1rem;
     }
 
     .bio {
@@ -49,6 +44,21 @@ main {
     .stats i {
       color: var(--sec);
     }
+
+    .actions {
+      margin: 0.5rem 0;
+      display: flex;
+      gap: 1rem;
+
+      i {
+        font-size: 1.2rem;
+      }
+
+      .button {
+        border-width: 2px;
+        font-size: 0.9rem;
+      }
+    }
   }
 
   .tabs {
@@ -62,6 +72,12 @@ main {
   main {
     header {
       grid-template-columns: 1fr;
+    }
+
+    header .actions .button {
+      align-items: center;
+      justify-content: center;
+      flex: 1;
     }
   }
 }

@@ -1,4 +1,5 @@
 main .pagination {
+  padding-bottom: 4rem;
   display: flex;
   align-items: center;
   justify-content: space-between;

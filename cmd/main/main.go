@@ -11,6 +11,7 @@ import (
 
 	"github.com/Noblefel/lensa"
 	"github.com/Noblefel/sela/internal/handler"
+	"github.com/Noblefel/sela/internal/mailer"
 	"github.com/Noblefel/sela/internal/types"
 	"github.com/Noblefel/sela/internal/util"
 	"github.com/alexedwards/scs/v2"
@@ -40,8 +41,10 @@ func main() {
 	render.UseFuncs(util.TemplateFuncs)
 	// render.UseCache()
 
+	mail := mailer.NewMailtrap(config)
+
 	session = scs.New()
-	app = handler.New(conn, session, render, config)
+	app = handler.New(conn, render, mail, config, session)
 
 	log.Println("serving...")
 	http.ListenAndServe("localhost:8080", route())

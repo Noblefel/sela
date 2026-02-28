@@ -7,9 +7,6 @@
 
 {{define "content"}}
 {{$user := index . "user"}}
-<form method="post" action="/users/{{ $user.Id }}/delete">
-  <button class="sec">Delete accont</button>
-</form>
 <form
   method="post"
   action="/users/{{ $user.Id }}/update"

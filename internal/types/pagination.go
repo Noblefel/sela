@@ -28,6 +28,7 @@ func NewPagination(u url.Values) *Pagination {
 		Page:   page,
 		Limit:  limit,
 		Offset: (page - 1) * limit,
+		Total:  -1, // assert
 	}
 }
 
@@ -37,14 +38,18 @@ func (p *Pagination) Query() string {
 }
 
 // calculate last page and the in-between pages
-func (p *Pagination) ParsePages(count int) {
-	ceil := math.Ceil(float64(count) / float64(p.Limit))
-	p.Last = int(ceil)
-	p.Total = count
+func (p *Pagination) WithPages() *Pagination {
+	if p.Total < 0 {
+		panic("count and set total rows first")
+	}
+
+	p.Last = int(math.Ceil(float64(p.Total) / float64(p.Limit)))
 
 	for i := p.Page - 2; i < p.Page+3; i++ {
 		if i > 0 && i <= p.Last {
 			p.Between = append(p.Between, i)
 		}
 	}
+
+	return p
 }

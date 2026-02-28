@@ -1,0 +1,34 @@
+{{template "layout" .}}
+
+{{define "head"}}
+<title>Email reset success</title>
+<style>
+  main {
+    display: flex;
+    gap: 0.5rem;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    i {
+      margin-top: 5rem;
+      font-size: 4rem !important;
+      padding: 0.25rem;
+      border-radius: 10px;
+    }
+
+    .button {
+      width: 300px;
+      max-width: 100%;
+      margin-top: 1rem;
+      font-size: 1rem;
+    }
+  }
+</style>
+{{ end }}
+
+{{define "content"}}
+<i class="material-symbols-outlined" style="color: var(--sec)"> mail </i>
+<h2>Email reset successful</h2>
+<a href="/" class="button sec">Return to home</a>
+{{ end }}

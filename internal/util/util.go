@@ -3,6 +3,7 @@ package util
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"math/rand"
 	"strings"
 	"time"
@@ -36,7 +37,7 @@ func Slug(s string) string {
 		stripNext = true
 	}
 
-	return strings.TrimPrefix(sb.String(), "-")
+	return strings.TrimSuffix(sb.String(), "-")
 }
 
 var TemplateFuncs = map[string]any{
@@ -68,4 +69,16 @@ var TemplateFuncs = map[string]any{
 			return fmt.Sprintf("%.0fm ago", m)
 		}
 	},
+}
+
+// i don't know much about message brokers and workers
+func Background(do func()) {
+	go func() {
+		defer func() {
+			if err := recover(); err != nil {
+				log.Println("RECOVERED (BACKGROUND)", err)
+			}
+		}()
+		do()
+	}()
 }

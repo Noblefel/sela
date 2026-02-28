@@ -46,22 +46,3 @@ func (f *FormUser) Validate() string {
 	}
 	return ""
 }
-
-// user data in session after login
-type Auth struct {
-	Id          int
-	Name        string
-	Username    string
-	Avatar      string
-	LastRefresh time.Time
-}
-
-func (a Auth) ShouldRefresh() bool {
-	return time.Since(a.LastRefresh) > 5*time.Minute
-}
-
-type GoogleUser struct {
-	Name    string `json:"name"`
-	Email   string `json:"email"`
-	Picture string `json:"picture"`
-}

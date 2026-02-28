@@ -13,7 +13,7 @@
 }
 
 body {
-  background-color: color-mix(in srgb, violet, white 92%);
+  background-color: color-mix(in srgb, var(--pri), white 92%);
   border-top: 5px solid var(--pri);
 
   > .background {
@@ -38,7 +38,8 @@ a {
   color: black;
   cursor: pointer;
 
-  &:is(.button), &:has(i) {
+  &:is(.button),
+  &:has(i) {
     text-decoration: none;
   }
 }
@@ -48,7 +49,7 @@ p {
 }
 
 .button {
-  padding: 0.35rem 0.7rem;
+  padding: 0.6rem 0.9rem;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -69,10 +70,15 @@ p {
   }
 
   &:has(i) {
+    padding: 0.3rem 0.7rem 0.3rem 0.4rem;
     display: flex;
-    padding-left: 0.4rem;
     align-items: center;
     gap: 0.35rem;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    filter: grayscale(0.5);
   }
 }
 
@@ -127,6 +133,61 @@ label {
     left: 0.75rem;
     top: 50%;
     transform: translateY(-50%);
+  }
+}
+
+*:has(> .popover) {
+  position: relative;
+}
+
+.popover {
+  background-color: color-mix(in srgb, var(--pri), white 85%);
+  border: 3px solid color-mix(in srgb, var(--pri), white 50%);
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  padding: 0;
+
+  position: absolute;
+  top: 100%;
+  right: 0;
+  opacity: 0;
+  visibility: 0;
+  z-index: 6;
+
+  translate: 0 5px;
+  transition: translate 0.4s, opacity 0.2s ease;
+  pointer-events: none;
+
+  &.active {
+    pointer-events: all;
+    opacity: 1;
+    visibility: visible;
+    translate: 0;
+  }
+
+  a,
+  form button {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    min-height: 2.5rem;
+    text-wrap: nowrap;
+    padding: 0 1.25rem 0 0.75rem;
+
+    color: inherit;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-family: inherit;
+    font-weight: 600;
+    opacity: 0.75;
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--pri), white 50%);
+    }
+  }
+
+  > *:not(:first-child) {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
   }
 }
 

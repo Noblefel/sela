@@ -8,6 +8,7 @@
 {{define "content"}}
 {{$user := index . "user"}}
 {{$auth := index . "auth"}}
+{{$pagination := index . "pagination"}}
 <header>
   <div>
     <img
@@ -20,20 +21,11 @@
     <h1>{{ $user.Name }}</h1>
     <p class="username">@{{ $user.Username }}</p>
 
-    {{if $user.Authorize $auth}}
-    <div class="actions">
-      <a href="/users/{{ $user.Id }}/edit" class="button">
-        <i class="material-symbols-outlined">edit</i>
-        <span>Edit</span>
-      </a>
-      <a href="" class="button">
-        <i class="material-symbols-outlined">settings</i>
-        <span>Settings</span>
-      </a>
-    </div>
-    {{ end }}
-
+    {{ if $user.Bio }}
     <p class="bio">{{ $user.Bio }}</p>
+    {{ else }}
+    <p class="bio"><i>This user has no bio...</i></p>
+    {{ end }}
 
     <div class="stats">
       <p>
@@ -42,8 +34,26 @@
       </p>
       <p>
         <i class="material-symbols-outlined">contract</i>
-        <span>23 Post created</span>
+        <span>{{ $pagination.Total }} articles made</span>
       </p>
+    </div>
+
+    <div class="actions">
+      {{if $user.Authorize $auth}}
+      <a href="/users/{{ $user.Id }}/edit" class="button">
+        <i class="material-symbols-outlined">edit</i>
+        <span>Edit</span>
+      </a>
+      <!-- TODO: til admin roles -->
+      <a href="/users/{{ $user.Id }}/settings" class="button">
+        <i class="material-symbols-outlined">settings</i>
+        <span>Settings</span>
+      </a>
+      {{ end }}
+      <a href="" class="button">
+        <i class="material-symbols-outlined">account_circle</i>
+        <span>follow</span>
+      </a>
     </div>
   </div>
 </header>
@@ -68,5 +78,7 @@
 
 <section id="articles-history">
   {{template "article_list" index . "articles"}}
+
+  {{template "pagination" $pagination}}
 </section>
 {{ end }}

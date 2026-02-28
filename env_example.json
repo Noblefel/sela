@@ -5,5 +5,8 @@
   "db_name": "sela",
   "db_user": "postgres",
   "db_password": "",
-  "upload_root": "upload"
+  "upload_root": "upload",
+  "mail": "sela@sela.com",
+  "mailer_api": "https://sandbox.api.mailtrap.io/api/send/...",
+  "mailer_api_token": ""
 }

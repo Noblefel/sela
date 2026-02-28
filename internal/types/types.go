@@ -1,7 +1,6 @@
 package types
 
 import (
-	"context"
 	"database/sql"
 	"io"
 )
@@ -14,6 +13,9 @@ type Config struct {
 	DB_User            string `json:"db_user"`
 	DB_Password        string `json:"db_password"`
 	UploadRoot         string `json:"upload_root"`
+	Mail               string `json:"mail"`
+	MailerApi          string `json:"mailer_api"`
+	MailerApiToken     string `json:"mailer_api_token"`
 }
 
 type DB interface {
@@ -22,14 +24,10 @@ type DB interface {
 	QueryRow(query string, args ...any) *sql.Row
 }
 
-type Session interface {
-	Get(ctx context.Context, key string) any
-	Pop(ctx context.Context, key string) any
-	Put(ctx context.Context, key string, val any)
-	Destroy(context.Context) error
-	RenewToken(context.Context) error
-}
-
 type Renderer interface {
 	View(out io.Writer, page string, data any) error
+}
+
+type Mailer interface {
+	Send(to, subject string, html []byte)
 }

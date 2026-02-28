@@ -1,29 +1,29 @@
 main {
   display: grid;
   place-content: center;
-}
 
-.container {
-  width: 400px;
-  max-width: 90dvw;
-  display: flex;
-  flex-direction: column;
-
-  h1 {
-    margin-bottom: 1.75rem;
-  }
-
-  hr {
-    margin: 1.25rem 0;
-    opacity: 0.25;
-  }
-
-  .button {
-    padding: 1rem;
-    font-size: 1.1rem;
+  .container {
+    width: 400px;
+    max-width: 90dvw;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: column;
+
+    h1 {
+      margin-bottom: 1.75rem;
+    }
+
+    hr {
+      margin: 1.25rem 0;
+      opacity: 0.25;
+    }
+
+    .button {
+      padding: 1rem;
+      font-size: 1.1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+    }
   }
 }

@@ -1,0 +1,50 @@
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  h2 {
+    margin: 2rem 0;
+    color: var(--sec);
+  }
+
+  form {
+    width: 500px;
+    max-width: 90dvw;
+
+    input {
+      font-size: 1rem !important;
+    }
+
+    .info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: 5px;
+    }
+
+    .info i {
+      color: var(--sec);
+    }
+
+    .actions {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .button.change {
+      background-color: color-mix(in srgb, forestgreen, white 10%);
+      border-color: forestgreen;
+      color: white;
+    }
+
+    .button.delete {
+      background-color: color-mix(in srgb, firebrick, white 10%);
+      border-color: firebrick;
+      color: white;
+    }
+  }
+}

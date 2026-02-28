@@ -75,6 +75,10 @@ main {
       color: var(--sec);
     }
 
+    .info p {
+      margin: 0;
+    }
+
     .actions {
       display: flex;
       gap: 1em;

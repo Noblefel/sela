@@ -2,26 +2,31 @@ My attempt at a decent, fully-featured blogging app that is SEO friendly using G
 
 ### Checklist
 
-|Features||
-|---|---|
-|SEO|⚒️|
-|UI - Design |⚒️|
-|UI - Responsivity |✅|
-|UI - WYSIWYG editor|✅|
-|Search & Filtering|✅|
-|Offset Pagination|✅|
-|Cursor Pagination (Infinite scroll)||
-|Oauth (Google)|✅|
-|Image uploads|✅|
-|Sessions|✅|
-|Add/update/manage articles|✅|
-|Add/update/manage profile |⚒️|
-|Add/update/manage comments||
-|Add/update/manage likes & saved||
-|Add/update/manage tags||
-|Add/update/manage followings||
-|Add/update/manage groups||
-|Notifications system||
-|Admin Panel||
-|Moderator Roles||
-|Minimizing Dependency|⚒️|
+| Features                            |     |
+| ----------------------------------- | --- |
+| SEO attributes, semantics           | ⚒️  |
+| SEO server-rendered article page    | ✅  |
+| Decent looking UI                   | ⚒️  |
+| Responsive UI                       | ✅  |
+| WYSIWYG editor                      | ✅  |
+| Search & Filtering                  | ✅  |
+| Offset Pagination                   | ✅  |
+| Cursor Pagination (Infinite scroll) |     |
+| Oauth (Google)                      | ✅  |
+| Image uploads                       | ✅  |
+| Sessions                            | ✅  |
+| Add/update/manage articles          | ✅  |
+| Articles soft delete & drafts       |     |
+| Add/update/manage profile           | ✅  |
+| Account settings                    | ✅  |
+| Add/update/manage comments          |     |
+| Add/update/manage likes & saved     |     |
+| Add/update/manage tags              |     |
+| Add/update/manage followings        |     |
+| Add/update/manage groups            |     |
+| Notifications system                |     |
+| Sending emails                      | ✅  |
+| Admin Panel                         |     |
+| Moderator Roles                     |     |
+| Minimizing Dependency               | ⚒️  |
+| Unit Testing                        |     |

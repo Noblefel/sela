@@ -77,25 +77,43 @@
       <main>{{block "content".}}{{ end }}</main>
 
       <div class="profile-side">
-        <div class="flex">
-          {{if $auth := index . "auth" }}
-          <a href="/u/@{{ $auth.Username }}" class="button">
-            <img
-              src="{{ avatar $auth.Avatar | forwardslash }}"
-              referrerpolicy="no-referrer"
-              alt="your profile avatar"
-            />
+        {{if $auth := index . "auth" }}
+        <button data-toggle="#pop">
+          <img
+            src="{{ avatar $auth.Avatar | forwardslash }}"
+            referrerpolicy="no-referrer"
+            alt="your profile avatar"
+          />
+        </button>
+        <menu id="pop" class="popover">
+          <a href="/me">
+            <i class="material-symbols-outlined">account_circle</i>
+            <span>My profile</span>
           </a>
-          {{else}}
-          <a href="/auth" class="button">
-            <img src="/static/pfp.png" />
+          <a href="/settings">
+            <i class="material-symbols-outlined">settings</i>
+            <span>Account settings</span>
           </a>
-          {{ end }}
-          <a class="button material-symbols-outlined"> notifications </a>
-          <a href="/auth/logout" class="button sec material-symbols-outlined">
-            logout
+          <a>
+            <i class="material-symbols-outlined">notifications</i>
+            <span>Notification</span>
           </a>
-        </div>
+          <a href="/auth/logout">
+            <i class="material-symbols-outlined">logout</i>
+            <span>Logout</span>
+          </a>
+        </menu>
+        {{else}}
+        <button data-toggle="#pop">
+          <img src="/static/pfp.png" />
+        </button>
+        <menu id="pop" class="popover">
+          <a href="/auth">
+            <i class="material-symbols-outlined">account_circle</i>
+            <span>Login</span>
+          </a>
+        </menu>
+        {{ end }}
       </div>
     </div>
   </body>

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"net"
 	"net/http"
 	"time"
@@ -12,25 +14,31 @@ import (
 func route() http.Handler {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /a/{slug}", app.ArticleShow)
-	mux.HandleFunc("POST /articles", auth(app.ArticlePost))
-	mux.HandleFunc("GET /articles/create", auth(app.ArticleCreate))
-	mux.HandleFunc("GET /articles/{id}/edit", auth(app.ArticleEdit))
-	mux.HandleFunc("POST /articles/{id}/update", auth(app.ArticleUpdate))
-	mux.HandleFunc("POST /articles/{id}/delete", auth(app.ArticleDelete))
-	mux.HandleFunc("GET /search", app.Search)
+	handle(mux, "GET /a/{slug}", app.ArticleShow)
+	handle(mux, "POST /articles", app.ArticlePost, auth)
+	handle(mux, "GET /articles/create", app.ArticleCreate, auth)
+	handle(mux, "GET /articles/{id}/edit", app.ArticleEdit, auth)
+	handle(mux, "POST /articles/{id}/update", app.ArticleUpdate, auth)
+	handle(mux, "POST /articles/{id}/delete", app.ArticleDelete, auth)
+	handle(mux, "GET /search", app.Search)
 
-	mux.HandleFunc("GET /u/{username}", app.UserProfile)
-	mux.HandleFunc("GET /users/{id}/edit", auth(app.UserEdit))
-	mux.HandleFunc("POST /users/{id}/update", auth(app.UserUpdate))
-	mux.HandleFunc("POST /users/{id}/delete", auth(app.UserDelete))
+	handle(mux, "GET /me", app.Me, auth)
+	handle(mux, "GET /u/{username}", app.UserProfile)
+	handle(mux, "GET /users/{id}/edit", app.UserEdit, auth)
+	handle(mux, "POST /users/{id}/update", app.UserUpdate, auth)
+	handle(mux, "POST /users/{id}/delete", app.UserDelete, auth)
+	handle(mux, "GET /settings", app.Settings, auth)
 
-	mux.HandleFunc("/auth", app.Auth)
-	mux.HandleFunc("/auth/force", app.AuthForceLogin)
-	mux.HandleFunc("/auth/google", app.AuthGoogle)
-	mux.HandleFunc("/auth/callback", app.AuthGoogleCallback)
-	mux.HandleFunc("/auth/logout", auth(app.AuthLogout))
-	mux.HandleFunc("/{$}", app.Home)
+	handle(mux, "GET /auth", app.Auth)
+	handle(mux, "/auth/force", app.AuthForceLogin)
+	handle(mux, "/auth/google", app.AuthGoogle)
+	handle(mux, "/auth/callback", app.AuthGoogleCallback)
+	handle(mux, "GET /auth/logout", app.AuthLogout, auth)
+
+	handle(mux, "POST /auth/reset-email", app.AuthResetStart, auth, strict)
+	handle(mux, "GET /auth/reset-email/{token}", app.AuthResetPage, auth)
+	handle(mux, "POST /auth/reset-email/{token}", app.AuthReset, auth)
+	handle(mux, "/{$}", app.Home)
 
 	mux.Handle("/images/{dir}/{prefix}/{prefix2}/{name}",
 		http.StripPrefix("/images", http.HandlerFunc(app.Image)))
@@ -46,12 +54,26 @@ func global(mux http.Handler) http.Handler {
 	mux = refresh(mux)
 	mux = session.LoadAndSave(mux)
 	mux = cors.Handler(mux)
+	mux = catch(mux)
 	mux = throttle(mux)
 	return mux
 }
 
-func refresh(next http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func catch(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				msg := fmt.Sprintln("RECOVERED:", err)
+				http.Error(w, msg, http.StatusInternalServerError)
+				log.Println(msg)
+			}
+		}()
+		next.ServeHTTP(w, r)
+	})
+}
+
+func refresh(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		u, ok := session.Get(r.Context(), "auth").(types.Auth)
 		if ok && u.ShouldRefresh() {
 			query := "SELECT name, username, COALESCE(avatar, '') FROM users WHERE id = $1"
@@ -63,22 +85,28 @@ func refresh(next http.Handler) http.HandlerFunc {
 			session.Put(r.Context(), "auth", u)
 		}
 		next.ServeHTTP(w, r)
-	}
+	})
 }
 
-func auth(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// session.Put(r.Context(), "auth", types.Auth{Id: 1}) // Debug mode
+func auth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if session.Get(r.Context(), "auth") == nil {
 			session.Put(r.Context(), "error", "you need to login first")
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
-		ratelimit(next).ServeHTTP(w, r)
-	}
+		limit(next).ServeHTTP(w, r)
+	})
 }
 
-var ratelimit = util.Limiter(10, 7*time.Second, func(r *http.Request) any {
+var limit = util.Limiter(10, 7*time.Second, func(r *http.Request) any {
+	if auth, ok := session.Get(r.Context(), "auth").(types.Auth); ok {
+		return auth.Id
+	}
+	return nil
+})
+
+var strict = util.Limiter(1, 1*time.Minute, func(r *http.Request) any {
 	if auth, ok := session.Get(r.Context(), "auth").(types.Auth); ok {
 		return auth.Id
 	}
@@ -95,3 +123,11 @@ var throttle = util.Limiter(20, 3*time.Second, func(r *http.Request) any {
 	}
 	return ip
 })
+
+func handle(mux *http.ServeMux, path string, fn http.HandlerFunc, mw ...func(http.Handler) http.Handler) {
+	final := http.Handler(fn)
+	for i := len(mw) - 1; i >= 0; i-- {
+		final = mw[i](final)
+	}
+	mux.Handle(path, final)
+}

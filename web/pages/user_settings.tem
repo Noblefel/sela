@@ -1,0 +1,97 @@
+{{template "layout" .}}
+
+{{define "head"}}
+<title>Account settings</title>
+<link rel="stylesheet" href="/static/css/user_settings.css" />
+{{ end }}
+
+{{define "content"}}
+{{$user := index . "user"}}
+<h2>Account Settings</h2>
+
+<form action="/auth/reset-email" method="post">
+  <label for="email">Change Email</label>
+  <div class="input-group">
+    <i class="material-symbols-outlined">mail</i>
+    <input
+      id="email"
+      name="email"
+      type="email"
+      value="{{ $user.Email }}"
+      alt="account email"
+      autocomplete="off"
+    />
+  </div>
+
+  <label for="confirm">Type CONFIRM to proceed</label>
+  <div class="input-group">
+    <input
+      id="confirm"
+      name="confirm"
+      type="text"
+      placeholder="..."
+      alt="type confirm"
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="info">
+    <i class="material-symbols-outlined">info</i>
+    <p>Verification code will be sent to confirm email switch</p>
+  </div>
+
+  <div class="info">
+    <i class="material-symbols-outlined">info</i>
+    <p>All articles and account data is kept when switching email</p>
+  </div>
+
+  <div class="actions">
+    <button class="button change" disabled>
+      <i class="material-symbols-outlined">mail</i>
+      <span>Change Email</span>
+    </button>
+    <button
+      class="button delete"
+      type="button"
+      disabled
+      onclick="deleteAccount()"
+    >
+      <i class="material-symbols-outlined">delete</i>
+      <span>Delete Account</span>
+    </button>
+  </div>
+</form>
+
+<script>
+  const form = document.querySelector("main form");
+  const email = form.querySelector("#email");
+  const confirmation = form.querySelector("#confirm");
+
+  confirmation.addEventListener("keyup", () => {
+    form.querySelectorAll(".actions button").forEach((e) => {
+      e.disabled = confirmation.value != "CONFIRM";
+    });
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    if (email.value == "{{$user.Email}}") {
+      alert("You already own this email");
+      return;
+    }
+
+    form.submit();
+  });
+
+  function deleteAccount() {
+    if (!confirm("Are you really sure you want to delete account?")) return;
+
+    const form = document.createElement("form");
+    document.body.appendChild(form);
+    form.action = "/users/{{$user.Id}}/delete";
+    form.method = "POST";
+    form.submit();
+  }
+</script>
+{{ end }}

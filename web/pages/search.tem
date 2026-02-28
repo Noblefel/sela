@@ -15,7 +15,7 @@
     <i class="material-symbols-outlined">search</i>
     <!-- prettier-ignore -->
     <input 
-      type="text" name="key" 
+      type="search" name="key" 
       placeholder="look for an article..." 
       value="{{ $query.Get "key" }}" />
   </div>

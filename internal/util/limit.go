@@ -9,7 +9,7 @@ import (
 func Limiter(max int, interval time.Duration, fn func(*http.Request) any) func(next http.Handler) http.Handler {
 	store := new(sync.Map)
 
-	go func() {
+	Background(func() {
 		ticker := time.NewTicker(interval)
 		for {
 			<-ticker.C
@@ -18,7 +18,7 @@ func Limiter(max int, interval time.Duration, fn func(*http.Request) any) func(n
 				return true
 			})
 		}
-	}()
+	})
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

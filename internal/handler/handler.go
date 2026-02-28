@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -12,17 +11,19 @@ import (
 
 	"github.com/Noblefel/sela/internal/types"
 	"github.com/Noblefel/sela/internal/util"
+	"github.com/alexedwards/scs/v2"
 )
 
 type Handlers struct {
 	db      types.DB
-	session types.Session
 	render  types.Renderer
+	mailer  types.Mailer
 	config  *types.Config
+	session *scs.SessionManager
 }
 
-func New(db types.DB, s types.Session, r types.Renderer, c *types.Config) *Handlers {
-	return &Handlers{db, s, r, c}
+func New(db types.DB, r types.Renderer, m types.Mailer, c *types.Config, s *scs.SessionManager) *Handlers {
+	return &Handlers{db, r, m, c, s}
 }
 
 func (app *Handlers) Image(w http.ResponseWriter, r *http.Request) {
@@ -55,12 +56,11 @@ func (app *Handlers) Search(w http.ResponseWriter, r *http.Request) {
 		filter     = "WHERE to_tsvector('simple', a.title) @@ plainto_tsquery('simple', $1) "
 		path       = r.URL.Query()
 		pagination = types.NewPagination(path)
-		total      int
 	)
 
 	query := "SELECT COUNT(a.id) FROM articles a " + filter
 	// get the total early before the ORDER BY filter
-	if err := app.db.QueryRow(query, path.Get("key")).Scan(&total); err != nil {
+	if err := app.db.QueryRow(query, path.Get("key")).Scan(&pagination.Total); err != nil {
 		app.error(w, err)
 		return
 	}
@@ -77,12 +77,10 @@ func (app *Handlers) Search(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pagination.ParsePages(total)
-
 	app.view(w, r, "search", map[string]any{
-		"articles":   articles,
-		"pagination": pagination,
 		"query":      r.URL.Query(),
+		"articles":   articles,
+		"pagination": pagination.WithPages(),
 	})
 }
 
@@ -102,7 +100,7 @@ func (app *Handlers) upload(r *http.Request, file string, dir string) (string, e
 	defer f.Close()
 
 	if fh.Size > (2 << 20) {
-		return "", errors.New("image too big")
+		return "", fmt.Errorf("image too big")
 	}
 
 	fbyte, _ := io.ReadAll(f)
@@ -112,7 +110,7 @@ func (app *Handlers) upload(r *http.Request, file string, dir string) (string, e
 		ftype != "image/jpg" &&
 		ftype != "image/png" &&
 		ftype != "image/svg" {
-		return "", errors.New("file not supported")
+		return "", fmt.Errorf("file not supported")
 	}
 
 	name := fmt.Sprintf("%s-%d.%s", util.RandomString(30), time.Now().UnixNano(), ftype[6:])
