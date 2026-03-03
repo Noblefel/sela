@@ -31,3 +31,8 @@ type ResetEmail struct {
 	Email     string
 	CreatedAt time.Time
 }
+
+func (r ResetEmail) Authorize(auth *Auth) bool {
+	// do nil check for convenience in templates
+	return auth != nil && r.UserId == auth.Id
+}

@@ -15,6 +15,8 @@ type Article struct {
 	Excerpt   string
 	Content   string
 	Image     string
+	Likes     int
+	Liked     bool
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt time.Time

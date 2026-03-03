@@ -228,7 +228,7 @@ func (app *Handlers) AuthResetPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if reset.UserId != app.auth(r).Id {
+	if !reset.Authorize(app.auth(r)) {
 		http.Error(w, "no permission", http.StatusForbidden)
 		return
 	}
@@ -260,7 +260,7 @@ func (app *Handlers) AuthReset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if reset.UserId != app.auth(r).Id {
+	if !reset.Authorize(app.auth(r)) {
 		http.Error(w, "no permission", http.StatusForbidden)
 		return
 	}

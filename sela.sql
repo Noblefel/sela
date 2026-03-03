@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS articles (
     excerpt VARCHAR(500),
     content TEXT NOT NULL,
     image VARCHAR,
+    likes INT DEFAULT 0,
 
     deleted_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -43,14 +44,15 @@ CREATE TABLE IF NOT EXISTS reset_emails (
     FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- CREATE TABLE IF NOT EXISTS likes_article (
---     user_id INT NOT NULL,
---     article_id INT NOT NULL,
---     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+-- TODO: properly decrement article likes than cascade delete on user
+CREATE TABLE IF NOT EXISTS article_likes (
+    user_id INT NOT NULL,
+    article_id INT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
---     PRIMARY KEY(user_id, article_id),
---     FOREIGN KEY(user_id) REFERENCES users(id),
---     FOREIGN KEY(article_id) REFERENCES articles(id)
--- )
+    PRIMARY KEY(user_id, article_id),
+    FOREIGN KEY(user_id) REFERENCES users(id),
+    FOREIGN KEY(article_id) REFERENCES articles(id) ON DELETE CASCADE
+)
 
 -- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public to sela; 

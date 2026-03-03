@@ -56,6 +56,17 @@ main {
       overflow: auto;
       justify-content: center;
     }
+
+    .liked {
+      background-color: color-mix(in srgb, crimson, transparent 90%);
+      border-color: color-mix(in srgb, crimson, transparent 50%);
+
+      i {
+        color: crimson;
+        animation: like 0.4s ease-in;
+        font-variation-settings: "FILL" 1;
+      }
+    }
   }
 
   #excerpt {
@@ -67,5 +78,19 @@ main {
 
   #content {
     margin: 5rem 0;
+  }
+}
+
+@keyframes like {
+  0% {
+    translate: 0;
+  }
+
+  40% {
+    scale: 1.33;
+  }
+
+  100% {
+    translate: 0;
   }
 }

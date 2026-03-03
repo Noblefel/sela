@@ -105,14 +105,14 @@
       !t.includes("svg") &&
       !t.includes("jpeg")
     ) {
-      alert("file not supported");
+      toast("file not supported", "error");
       input.value = "";
       input.files = null;
       return;
     }
 
     if (file.size > 2 << 20) {
-      alert("image is too big");
+      toast("image is too big", "error");
       input.value = "";
       input.files = null;
       return;

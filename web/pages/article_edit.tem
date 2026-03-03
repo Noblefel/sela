@@ -106,7 +106,7 @@
 
     content.value = editor.firstChild.getHTML();
     if (content.value.length < 100) {
-      alert("content is too short");
+      toast("content is too short", "error");
       return;
     }
 
@@ -152,13 +152,13 @@
       !t.includes("svg") &&
       !t.includes("jpeg")
     ) {
-      alert("file not supported");
+      toast("file not supported", "error");
       deleteimg();
       return;
     }
 
     if (file.size > 2 << 20) {
-      alert("image is too big");
+      toast("image is too big", "error");
       deleteimg();
       return;
     }

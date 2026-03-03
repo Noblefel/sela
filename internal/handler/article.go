@@ -2,6 +2,7 @@ package handler
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -20,15 +21,26 @@ func (app *Handlers) ArticleShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := "SELECT username, name, COALESCE(avatar, '') FROM users WHERE id = $1"
+	var (
+		queryAuthor = "SELECT username, name, COALESCE(avatar, '') FROM users WHERE id = $1"
+		queryLiked  = "SELECT EXISTS(SELECT FROM article_likes WHERE article_id = $1 AND user_id = $2)"
+		auth        = app.auth(r)
+	)
 
-	if err := app.db.QueryRow(query, article.UserId).Scan(
+	if err := app.db.QueryRow(queryAuthor, article.UserId).Scan(
 		&article.User.Username,
 		&article.User.Name,
 		&article.User.Avatar,
 	); err != nil {
 		app.error(w, err)
 		return
+	}
+
+	if auth != nil {
+		if err := app.db.QueryRow(queryLiked, article.Id, auth.Id).Scan(&article.Liked); err != nil {
+			app.error(w, err)
+			return
+		}
 	}
 
 	app.view(w, r, "article_show", map[string]any{"article": article})
@@ -209,12 +221,51 @@ func (app *Handlers) ArticleDelete(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
+func (app *Handlers) ArticleLikeToggle(w http.ResponseWriter, r *http.Request) {
+	article, err := app.queryArticle("WHERE id = $1", r.PathValue("id"))
+	if err != nil {
+		app.error(w, err)
+		return
+	}
+
+	var (
+		authId     = app.auth(r).Id
+		queryExist = "SELECT EXISTS(SELECT FROM article_likes WHERE article_id = $1 AND user_id = $2)"
+		queryLikes string
+		queryCount string
+		hasLiked   bool
+	)
+
+	if err := app.db.QueryRow(queryExist, article.Id, authId).Scan(&hasLiked); err != nil {
+		app.error(w, err)
+		return
+	}
+
+	if hasLiked {
+		queryLikes = "DELETE FROM article_likes WHERE article_id = $1 AND user_id = $2"
+		queryCount = "UPDATE articles SET likes = (likes - 1) WHERE id = $1"
+	} else {
+		queryLikes = "INSERT INTO article_likes (article_id, user_id) VALUES ($1, $2)"
+		queryCount = "UPDATE articles SET likes = (likes + 1) WHERE id = $1"
+	}
+
+	if _, err = app.db.Exec(queryLikes, article.Id, authId); err != nil {
+		app.error(w, err)
+		return
+	}
+
+	if _, err = app.db.Exec(queryCount, article.Id); err != nil {
+		app.error(w, err)
+		return
+	}
+}
+
 func (app *Handlers) queryArticle(filter string, args ...any) (*types.Article, error) {
 	article := new(types.Article)
 
 	query := `
 		SELECT id, slug, user_id, title, COALESCE(excerpt, ''), 
-			content, COALESCE(image, ''), created_at, updated_at
+			content, COALESCE(image, ''), likes, created_at, updated_at
 		FROM articles `
 
 	return article, app.db.QueryRow(query+filter, args...).Scan(
@@ -225,18 +276,28 @@ func (app *Handlers) queryArticle(filter string, args ...any) (*types.Article, e
 		&article.Excerpt,
 		&article.Content,
 		&article.Image,
+		&article.Likes,
 		&article.CreatedAt,
 		&article.UpdatedAt,
 	)
 }
 
-func (app *Handlers) queryArticles(filter string, args ...any) ([]types.Article, error) {
+// TODO: remove http.Request param/find a better way to check liked articles.
+// TODO: join article_likes so this can be used in user favorites handler.
+func (app *Handlers) queryArticles(r *http.Request, filter string, args ...any) ([]types.Article, error) {
 	var list []types.Article
-	query := `SELECT  a.id, a.user_id, a.title, a.slug, COALESCE(a.excerpt, ''), 
-		a.content, COALESCE(a.image, ''), a.created_at, a.updated_at, a.deleted_at,
-		u.username, u.name, COALESCE(u.avatar, '')
-	FROM articles a
-	LEFT JOIN users u ON a.user_id = u.id `
+	query := `SELECT a.id, a.user_id, a.title, a.slug, COALESCE(a.excerpt, ''), a.content, COALESCE(a.image, ''), 
+		a.likes, a.created_at, a.updated_at, a.deleted_at, u.username, u.name, COALESCE(u.avatar, ''), 
+		EXISTS(SELECT FROM article_likes al WHERE al.article_id = a.id and al.user_id = %v) `
+
+	// check liked articles
+	if app.auth(r) != nil {
+		query = fmt.Sprintf(query, app.auth(r).Id)
+	} else {
+		query = fmt.Sprintf(query, 0)
+	}
+
+	query += "FROM articles a LEFT JOIN users u ON a.user_id = u.id "
 
 	rows, err := app.db.Query(query+filter, args...)
 	if err != nil {
@@ -248,9 +309,9 @@ func (app *Handlers) queryArticles(filter string, args ...any) ([]types.Article,
 		var article types.Article
 		if err = rows.Scan(
 			&article.Id, &article.UserId, &article.Title, &article.Slug,
-			&article.Excerpt, &article.Content, &article.Image,
+			&article.Excerpt, &article.Content, &article.Image, &article.Likes,
 			&article.CreatedAt, &article.UpdatedAt, &article.DeletedAt,
-			&article.User.Username, &article.User.Name, &article.User.Avatar,
+			&article.User.Username, &article.User.Name, &article.User.Avatar, &article.Liked,
 		); err != nil {
 			return nil, err
 		}

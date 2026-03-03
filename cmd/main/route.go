@@ -14,13 +14,14 @@ import (
 func route() http.Handler {
 	mux := http.NewServeMux()
 
+	handle(mux, "GET /search", app.Search)
 	handle(mux, "GET /a/{slug}", app.ArticleShow)
 	handle(mux, "POST /articles", app.ArticlePost, auth)
 	handle(mux, "GET /articles/create", app.ArticleCreate, auth)
 	handle(mux, "GET /articles/{id}/edit", app.ArticleEdit, auth)
 	handle(mux, "POST /articles/{id}/update", app.ArticleUpdate, auth)
 	handle(mux, "POST /articles/{id}/delete", app.ArticleDelete, auth)
-	handle(mux, "GET /search", app.Search)
+	handle(mux, "POST /articles/{id}/like", app.ArticleLikeToggle, auth)
 
 	handle(mux, "GET /me", app.Me, auth)
 	handle(mux, "GET /u/{username}", app.UserProfile)
@@ -91,9 +92,15 @@ func refresh(next http.Handler) http.Handler {
 func auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if session.Get(r.Context(), "auth") == nil {
-			session.Put(r.Context(), "error", "you need to login first")
-			http.Redirect(w, r, "/", http.StatusSeeOther)
-			return
+			if r.Header.Get("Content-Type") == "application/json" {
+				w.WriteHeader(http.StatusUnauthorized)
+				w.Write([]byte("you need to login first"))
+				return
+			} else {
+				session.Put(r.Context(), "error", "you need to login first")
+				http.Redirect(w, r, "/", http.StatusSeeOther)
+				return
+			}
 		}
 		limit(next).ServeHTTP(w, r)
 	})

@@ -27,3 +27,11 @@ window.addEventListener("click", (e) => {
     target?.classList.remove("active");
   });
 });
+
+function toast(msg, classN) {
+  const template = `<div class="toast ${classN}">
+      <i class="material-symbols-outlined">info</i>
+      <p>${msg}</p></div>`;
+
+  document.body.insertAdjacentHTML("beforeend", template);
+}

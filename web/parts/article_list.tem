@@ -26,10 +26,14 @@
     <p class="excerpt">{{.Excerpt}}</p>
 
     <div class="actions">
-      <button class="button">
+      <button
+        class="button {{if .Liked }}liked{{ end }}"
+        onclick="like(this, '{{ .Id }}')"
+      >
         <i class="material-symbols-outlined">favorite</i>
-        <span>Be the first</span>
+        <span>{{ if .Likes }}{{ .Likes }}{{ else }}Be the first{{ end }}</span>
       </button>
+
       <button class="button">
         <i class="material-symbols-outlined">comment</i>
         <span>Be the first</span>
@@ -44,4 +48,42 @@
   </div>
   {{ end }}
 </div>
+
+<script>
+  // using onclick and local scope to avoid conflict
+  // because this list component is used twice in index.tem
+  async function like(e, id) {
+    const toggle = () => {
+      const span = e.querySelector("span");
+      const text = span.innerText;
+
+      if (e.classList.contains("liked")) {
+        span.innerText = text == "1" ? "Be the first" : Number(text) - 1;
+        e.classList.remove("liked");
+      } else {
+        span.innerText = text == "Be the first" ? 1 : Number(text) + 1;
+        e.classList.add("liked");
+      }
+    };
+
+    toggle();
+    e.disabled = true;
+    await new Promise((res) => setTimeout(res, 400));
+
+    try {
+      const res = await fetch(`/articles/${id}/like`, {
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+    } catch (error) {
+      toast(error.message, "error");
+      console.log(error);
+      toggle();
+    } finally {
+      e.disabled = false;
+    }
+  }
+</script>
 {{ end }}

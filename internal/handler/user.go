@@ -34,7 +34,7 @@ func (app *Handlers) UserProfile(w http.ResponseWriter, r *http.Request) {
 	)
 
 	// TODO: change this redundant JOIN query
-	articles, err := app.queryArticles(queryList+pagination.Query(), user.Id)
+	articles, err := app.queryArticles(r, queryList+pagination.Query(), user.Id)
 	if err != nil {
 		app.error(w, err)
 		return

@@ -7,6 +7,7 @@
 {{ end }}
 
 {{define "content"}}
+{{$auth := index . "auth"}}
 {{$article := index . "article"}}
 {{$created := $article.CreatedAt }}
 <header>
@@ -42,9 +43,10 @@
   </div>
 
   <div class="actions">
-    <button class="button">
+    <!-- prettier-ignore -->
+    <button class='button {{if $article.Liked }}liked{{ end }}' id="like">
       <i class="material-symbols-outlined">favorite</i>
-      <span>Be the first</span>
+      <span>{{ if $article.Likes }}{{ $article.Likes }}{{ else }}Be the first{{ end }}</span>
     </button>
 
     <button class="button">
@@ -57,7 +59,7 @@
       <span>Saved</span>
     </button>
 
-    {{ if $article.Authorize (index . "auth") }}
+    {{ if $article.Authorize $auth }}
     <a class="button" href="/articles/{{ $article.Id }}/edit">
       <i class="material-symbols-outlined">edit</i>
       <span>Edit</span>
@@ -74,4 +76,42 @@
   {{ $article.Content | html }}
 </section>
 
+<script>
+  const button = document.querySelector("#like");
+
+  button.addEventListener("click", async () => {
+    like();
+    button.disabled = true;
+    await new Promise((res) => setTimeout(res, 400));
+
+    try {
+      const res = await fetch("/articles/{{$article.Id}}/like", {
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+    } catch (error) {
+      toast(error.message, "error");
+      console.log(error);
+      like();
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  // optimistic update
+  function like() {
+    const span = button.querySelector("span");
+    const text = span.innerText;
+
+    if (button.classList.contains("liked")) {
+      span.innerText = text == "1" ? "Be the first" : Number(text) - 1;
+      button.classList.remove("liked");
+    } else {
+      span.innerText = text == "Be the first" ? 1 : Number(text) + 1;
+      button.classList.add("liked");
+    }
+  }
+</script>
 {{ end }}

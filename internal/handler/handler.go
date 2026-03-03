@@ -31,7 +31,7 @@ func (app *Handlers) Image(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Handlers) Home(w http.ResponseWriter, r *http.Request) {
-	articlesNew, err := app.queryArticles("ORDER BY a.created_at DESC LIMIT 10")
+	articlesNew, err := app.queryArticles(r, "ORDER BY a.created_at DESC LIMIT 10")
 	if err != nil {
 		app.error(w, err)
 		return
@@ -39,7 +39,7 @@ func (app *Handlers) Home(w http.ResponseWriter, r *http.Request) {
 
 	month := time.Now().AddDate(0, -1, 0)
 
-	articlesMonthly, err := app.queryArticles("WHERE a.created_at > $1 LIMIT 2", month)
+	articlesMonthly, err := app.queryArticles(r, "WHERE a.created_at > $1 LIMIT 2", month)
 	if err != nil {
 		app.error(w, err)
 		return
@@ -71,7 +71,7 @@ func (app *Handlers) Search(w http.ResponseWriter, r *http.Request) {
 		filter += "ORDER BY a.created_at DESC "
 	}
 
-	articles, err := app.queryArticles(filter+pagination.Query(), path.Get("key"))
+	articles, err := app.queryArticles(r, filter+pagination.Query(), path.Get("key"))
 	if err != nil {
 		app.error(w, err)
 		return

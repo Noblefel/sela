@@ -19,8 +19,9 @@ My attempt at a decent, fully-featured blogging app that is SEO friendly using G
 | Articles soft delete & drafts       |     |
 | Add/update/manage profile           | ✅  |
 | Account settings                    | ✅  |
+| Privacy settings                    | ⚒️  |
 | Add/update/manage comments          |     |
-| Add/update/manage likes & saved     |     |
+| Add/update/manage likes & saved     | ⚒️  |
 | Add/update/manage tags              |     |
 | Add/update/manage followings        |     |
 | Add/update/manage groups            |     |

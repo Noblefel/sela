@@ -77,7 +77,7 @@
     e.preventDefault();
 
     if (email.value == "{{$user.Email}}") {
-      alert("You already own this email");
+      toast("You already own this email", "error");
       return;
     }
 
