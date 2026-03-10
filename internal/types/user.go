@@ -16,11 +16,18 @@ type User struct {
 	Admin     bool
 	CreatedAt time.Time
 	UpdatedAt time.Time
+
+	ProfileFavoritesShow bool
+	ProfileCommentsShow  bool
 }
 
 func (u User) Authorize(auth *Auth) bool {
 	// do nil check for convenience in templates
 	return auth != nil && u.Id == auth.Id
+}
+
+func (u User) ShowFavorites(auth *Auth) bool {
+	return (auth != nil && u.Authorize(auth)) || u.ProfileFavoritesShow
 }
 
 type FormUser struct {

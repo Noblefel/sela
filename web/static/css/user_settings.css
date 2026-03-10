@@ -11,6 +11,7 @@ main {
   form {
     width: 500px;
     max-width: 90dvw;
+    margin-bottom: 3rem;
 
     input {
       font-size: 1rem !important;
@@ -45,6 +46,54 @@ main {
       background-color: color-mix(in srgb, firebrick, white 10%);
       border-color: firebrick;
       color: white;
+    }
+
+    .flex {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.25rem;
+    }
+
+    p,
+    label {
+      font-size: 0.9rem;
+    }
+
+    .radio-group {
+      display: flex;
+      flex-wrap: nowrap;
+
+      label {
+        background-color: white;
+        color: rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+        padding: 0.35rem 0.7rem 0.35rem 0.35rem;
+        border: 2px solid rgba(0, 0, 0, 0.2);
+      }
+
+      label:first-of-type {
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      label:last-of-type {
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+        border-left: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      label:has(:checked) {
+        background-color: rgba(0, 0, 0, 0.4);
+        color: white;
+      }
+
+      input[type="radio"] {
+        appearance: none;
+        position: absolute;
+      }
     }
   }
 }

@@ -11,7 +11,7 @@
   <!-- prettier-ignore -->
   <div class="between">
     {{ range $pagination.Between }}
-    <a data-link="{{.}}" class="{{if (eq . $pagination.Page) }}active button sec{{ end }}">
+    <a data-link="{{.}}" class="button {{if (eq . $pagination.Page) }}active sec{{ end }}">
       {{.}}
     </a>
     {{ end }}

@@ -69,6 +69,7 @@ var TemplateFuncs = map[string]any{
 			return fmt.Sprintf("%.0fm ago", m)
 		}
 	},
+	"has": strings.Contains,
 }
 
 // i don't know much about message brokers and workers

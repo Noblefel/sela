@@ -1,11 +1,13 @@
 {{template "layout" .}}
 
 {{define "head"}}
-<title>User profile</title>
+{{$user := index . "user"}}
+<title>{{ $user.Name }} Profile</title>
 <link rel="stylesheet" href="/static/css/user_profile.css" />
 {{ end }}
 
 {{define "content"}}
+{{$page := index . "page"}}
 {{$user := index . "user"}}
 {{$auth := index . "auth"}}
 {{$pagination := index . "pagination"}}
@@ -59,20 +61,40 @@
 </header>
 
 <div class="tabs">
-  <a class="button sec">
+  {{ if has $page "/me" }}
+  <a class="button" href="/me" data-tab="articles">
+    <i class="material-symbols-outlined">contract</i>
+    <span>My Articles</span>
+  </a>
+  <a class="button" href="/me/comments" data-tab="comments">
+    <i class="material-symbols-outlined">comment</i>
+    <span>My Comments</span>
+  </a>
+  <a class="button" href="/me/favorites" data-tab="favorites">
+    <i class="material-symbols-outlined">favorite</i>
+    <span>My Favorite</span>
+  </a>
+  {{ else }}
+  <a class="button" href="/u/{{ $user.Username }}" data-tab="articles">
     <i class="material-symbols-outlined">contract</i>
     <span>Articles</span>
   </a>
-  <a class="button">
+  {{ if $user.ProfileCommentsShow }}
+  <a class="button" href="/u/{{ $user.Username }}/comments" data-tab="comments">
     <i class="material-symbols-outlined">comment</i>
     <span>Comments</span>
   </a>
-
-  {{if $user.Authorize $auth}}
-  <a class="button">
+  {{ end }}
+  {{ if $user.ProfileFavoritesShow }}
+  <a
+    class="button"
+    href="/u/{{ $user.Username }}/favorites"
+    data-tab="favorites"
+  >
     <i class="material-symbols-outlined">favorite</i>
     <span>Favorite</span>
   </a>
+  {{ end }}
   {{ end }}
 </div>
 
@@ -81,4 +103,16 @@
 
   {{template "pagination" $pagination}}
 </section>
+
+<script>
+  const path = window.location.pathname;
+
+  if (path.endsWith("comments")) {
+    document.querySelector("[data-tab='comments']").classList.add("sec");
+  } else if (path.endsWith("favorites")) {
+    document.querySelector("[data-tab='favorites']").classList.add("sec");
+  } else {
+    document.querySelector("[data-tab='articles']").classList.add("sec");
+  }
+</script>
 {{ end }}

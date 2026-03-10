@@ -50,22 +50,20 @@
           </a>
         </div>
 
-        <!-- prettier-ignore -->
         <nav>
-          {{ $page := index . "page" }}
-          <a href="/" class='page {{ if eq $page "/" }}active{{ end }}'>
+          <a href="/" class="page">
             <i class="material-symbols-outlined">cottage</i>
             <span>Home</span>
           </a>
-          <a href="/articles/create" class='page {{ if eq $page "/articles/create" }}active{{ end }}'>
+          <a href="/articles/create" class="page">
             <i class="material-symbols-outlined">contract_edit</i>
             <span>Create</span>
-          </a> 
-          <a href="/random" class='page {{ if eq $page "/random" }}active{{ end }}'>
+          </a>
+          <a href="/random" class="page">
             <i class="material-symbols-outlined">search</i>
             <span>Random</span>
           </a>
-          <a href="/bookmark" class='page {{ if eq $page "/saved" }}active{{ end }}'>
+          <a href="/bookmark" class="page">
             <i class="material-symbols-outlined">bookmark</i>
             <span>Saved</span>
           </a>
@@ -116,6 +114,19 @@
         {{ end }}
       </div>
     </div>
+    
+    <script>
+      const links = document.querySelectorAll(".layout nav a");
+      const path = window.location.pathname;
+
+      if (path == "/") {
+        links[0].classList.add("active");
+      } else if (path == "/articles/create") {
+        links[1].classList.add("active");
+      } else if (path == "/saved") {
+        links[3].classList.add("active");
+      }
+    </script>
   </body>
 </html>
 {{ end }}

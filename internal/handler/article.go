@@ -282,22 +282,19 @@ func (app *Handlers) queryArticle(filter string, args ...any) (*types.Article, e
 	)
 }
 
-// TODO: remove http.Request param/find a better way to check liked articles.
-// TODO: join article_likes so this can be used in user favorites handler.
 func (app *Handlers) queryArticles(r *http.Request, filter string, args ...any) ([]types.Article, error) {
 	var list []types.Article
 	query := `SELECT a.id, a.user_id, a.title, a.slug, COALESCE(a.excerpt, ''), a.content, COALESCE(a.image, ''), 
 		a.likes, a.created_at, a.updated_at, a.deleted_at, u.username, u.name, COALESCE(u.avatar, ''), 
-		EXISTS(SELECT FROM article_likes al WHERE al.article_id = a.id and al.user_id = %v) `
+		al.user_id IS NOT NULL
+		FROM articles a LEFT JOIN users u ON a.user_id = u.id
+		LEFT JOIN article_likes al ON a.id = al.article_id AND al.user_id = `
 
-	// check liked articles
 	if app.auth(r) != nil {
-		query = fmt.Sprintf(query, app.auth(r).Id)
+		query += fmt.Sprint(app.auth(r).Id, " ")
 	} else {
-		query = fmt.Sprintf(query, 0)
+		query += "0 "
 	}
-
-	query += "FROM articles a LEFT JOIN users u ON a.user_id = u.id "
 
 	rows, err := app.db.Query(query+filter, args...)
 	if err != nil {

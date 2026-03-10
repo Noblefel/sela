@@ -184,11 +184,75 @@ func (app *Handlers) Settings(w http.ResponseWriter, r *http.Request) {
 	app.view(w, r, "user_settings", map[string]any{"user": user})
 }
 
+func (app *Handlers) SettingsPrivacy(w http.ResponseWriter, r *http.Request) {
+	var (
+		favorite = r.FormValue("show_favorites") == "true"
+		comments = r.FormValue("show_comments") == "true"
+		query    = "UPDATE users SET profile_favorites_show = $2, profile_comments_show = $3 WHERE id = $1"
+	)
+
+	if _, err := app.db.Exec(query, app.auth(r).Id, favorite, comments); err != nil {
+		app.error(w, err)
+		return
+	}
+
+	app.session.Put(r.Context(), "success", "settings updated")
+	app.back(w, r)
+}
+
+func (app *Handlers) MeFavorite(w http.ResponseWriter, r *http.Request) {
+	r.SetPathValue("username", app.auth(r).Username)
+	app.UserFavorite(w, r)
+}
+
+func (app *Handlers) UserFavorite(w http.ResponseWriter, r *http.Request) {
+	username := strings.TrimPrefix(r.PathValue("username"), "@")
+	user, err := app.queryUser("WHERE username = $1", username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			w.WriteHeader(http.StatusNotFound)
+			app.view(w, r, "user_404", map[string]any{})
+			return
+		}
+		app.error(w, err)
+		return
+	}
+
+	if !user.ShowFavorites(app.auth(r)) {
+		http.Error(w, "no permission", http.StatusForbidden)
+		return
+	}
+
+	var (
+		pagination = types.NewPagination(r.URL.Query())
+		queryList  = "WHERE al.user_id = $1 ORDER BY a.created_at DESC "
+		queryTotal = "SELECT COUNT(user_id) FROM article_likes WHERE user_id = $1"
+	)
+
+	articles, err := app.queryArticles(r, queryList+pagination.Query(), user.Id)
+	if err != nil {
+		app.error(w, err)
+		return
+	}
+
+	if err := app.db.QueryRow(queryTotal, user.Id).Scan(&pagination.Total); err != nil {
+		app.error(w, err)
+		return
+	}
+
+	app.view(w, r, "user_profile", map[string]any{
+		"user":       user,
+		"articles":   articles,
+		"pagination": pagination.WithPages(),
+	})
+}
+
 func (app *Handlers) queryUser(filter string, args ...any) (*types.User, error) {
 	user := new(types.User)
 
 	query := `
 		SELECT id, email, username, name, COALESCE(bio, ''), COALESCE(avatar, ''), 
+			profile_favorites_show, profile_comments_show,
 			created_at, updated_at 
 		FROM users `
 
@@ -199,6 +263,8 @@ func (app *Handlers) queryUser(filter string, args ...any) (*types.User, error) 
 		&user.Name,
 		&user.Bio,
 		&user.Avatar,
+		&user.ProfileFavoritesShow,
+		&user.ProfileCommentsShow,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)

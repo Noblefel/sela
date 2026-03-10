@@ -21,6 +21,9 @@ CREATE TABLE IF NOT EXISTS articles (
     image VARCHAR,
     likes INT DEFAULT 0,
 
+    profile_favorites_show BOOLEAN DEFAULT TRUE,
+    profile_comments_show BOOLEAN DEFAULT TRUE,
+
     deleted_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -53,6 +56,7 @@ CREATE TABLE IF NOT EXISTS article_likes (
     PRIMARY KEY(user_id, article_id),
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(article_id) REFERENCES articles(id) ON DELETE CASCADE
-)
+);
+ 
 
 -- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public to sela; 

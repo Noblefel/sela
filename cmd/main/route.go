@@ -24,11 +24,15 @@ func route() http.Handler {
 	handle(mux, "POST /articles/{id}/like", app.ArticleLikeToggle, auth)
 
 	handle(mux, "GET /me", app.Me, auth)
+	handle(mux, "GET /me/favorites", app.MeFavorite, auth)
+
 	handle(mux, "GET /u/{username}", app.UserProfile)
+	handle(mux, "GET /u/{username}/favorites", app.UserFavorite)
 	handle(mux, "GET /users/{id}/edit", app.UserEdit, auth)
 	handle(mux, "POST /users/{id}/update", app.UserUpdate, auth)
 	handle(mux, "POST /users/{id}/delete", app.UserDelete, auth)
 	handle(mux, "GET /settings", app.Settings, auth)
+	handle(mux, "POST /settings/privacy", app.SettingsPrivacy, auth)
 
 	handle(mux, "GET /auth", app.Auth)
 	handle(mux, "/auth/force", app.AuthForceLogin)
