@@ -269,3 +269,29 @@ func (app *Handlers) queryUser(filter string, args ...any) (*types.User, error) 
 		&user.UpdatedAt,
 	)
 }
+
+func (app *Handlers) queryUsers(filter string, args ...any) ([]types.User, error) {
+	var list []types.User
+
+	query := `
+		SELECT u.id, u.email, u.username, u.name, COALESCE(u.bio, ''), COALESCE(u.avatar, ''), 
+		created_at FROM users u `
+
+	rows, err := app.db.Query(query+filter, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var u types.User
+		if err := rows.Scan(
+			&u.Id, &u.Email, &u.Username,
+			&u.Name, &u.Bio, &u.Avatar, &u.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		list = append(list, u)
+	}
+	return list, rows.Err()
+}

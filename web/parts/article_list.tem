@@ -43,8 +43,8 @@
   </article>
   {{else}}
   <div class="empty">
-    <i class="material-symbols-outlined">contract_delete</i>
-    <p>Whoops! No article found</p>
+    <i class="material-symbols-outlined">sentiment_stressed</i>
+    <h3>Whoops! No article found</h3>
   </div>
   {{ end }}
 </div>

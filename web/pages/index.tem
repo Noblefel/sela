@@ -6,12 +6,75 @@
 {{ end }}
 
 {{define "content"}}
-<form id="search" action="/search">
-  <div class="input-group">
-    <i class="material-symbols-outlined">search</i>
-    <input type="search" name="key" placeholder="look for an article..." />
+<section id="search">
+  <div class="tabs">
+    <button data-tab="search-articles" class="active">
+      <div class="material-symbols-outlined">article</div>
+      <p>Articles</p>
+    </button>
+    <button data-tab="search-authors">
+      <div class="material-symbols-outlined">account_circle</div>
+      <p>Authors</p>
+    </button>
+    <button data-tab="search-comments">
+      <div class="material-symbols-outlined">comment</div>
+      <p>Comments</p>
+    </button>
   </div>
-</form>
+
+  <form action="/search" id="search-articles" class="active">
+    <div class="input-group">
+      <i class="material-symbols-outlined">search</i>
+      <input type="search" name="key" placeholder="look article titles..." />
+    </div>
+
+    <div class="filters">
+      <div class="input-group">
+        <select name="sort">
+          <option value="newest">Sort by newest</option>
+          <option value="oldest">Sort by oldest</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <select name="category">
+          <option value="all">All category</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <select name="limit">
+          <option value="10">10 per page</option>
+          <option value="20">20 per page</option>
+          <option value="35">35 per page</option>
+          <option value="50">50 per page</option>
+          <option value="80">80 per page</option>
+        </select>
+      </div>
+      <button class="button sec">Search Article</button>
+    </div>
+  </form>
+  <form action="/search/authors" id="search-authors">
+    <div class="input-group">
+      <i class="material-symbols-outlined">account_circle</i>
+      <input type="search" name="key" placeholder="look author names..." />
+    </div>
+
+    <div class="filters">
+      <div class="input-group">
+        <select name="limit">
+          <option value="10">10 per page</option>
+          <option value="20">20 per page</option>
+          <option value="35">35 per page</option>
+          <option value="50">50 per page</option>
+          <option value="80">80 per page</option>
+        </select>
+      </div>
+      <button class="button sec">Search Author</button>
+    </div>
+  </form>
+  <form id="search-comments">
+    <p>Work in progress</p>
+  </form>
+</section>
 
 <section id="top-read">
   <h3>Top read this month</h3>
@@ -24,4 +87,23 @@
 
   {{template "article_list" index . "articles_new"}}
 </section>
+
+<script>
+  const searchtabs = document.querySelectorAll("#search .tabs button");
+  const searchforms = document.querySelectorAll("#search form");
+
+  for (const t of searchtabs) {
+    t.addEventListener("click", () => {
+      for (const tt of searchtabs) {
+        t == tt ? tt.classList.add("active") : tt.classList.remove("active");
+      }
+
+      for (const f of searchforms) {
+        f.id == t.getAttribute("data-tab")
+          ? f.classList.add("active")
+          : f.classList.remove("active");
+      }
+    });
+  }
+</script>
 {{ end }}

@@ -22,11 +22,13 @@ func NewPagination(u url.Values) *Pagination {
 	page = max(page, 1)
 
 	limit, _ := strconv.Atoi(u.Get("limit"))
-	limit = max(min(limit, 80), 10)
+	if limit == 0 {
+		limit = 10
+	}
 
 	return &Pagination{
 		Page:   page,
-		Limit:  limit,
+		Limit:  max(min(limit, 80), 1),
 		Offset: (page - 1) * limit,
 		Total:  -1, // assert
 	}

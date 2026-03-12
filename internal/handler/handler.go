@@ -79,7 +79,32 @@ func (app *Handlers) Search(w http.ResponseWriter, r *http.Request) {
 
 	app.view(w, r, "search", map[string]any{
 		"query":      r.URL.Query(),
-		"articles":   articles,
+		"result":     articles,
+		"pagination": pagination.WithPages(),
+	})
+}
+
+func (app *Handlers) SearchAuthor(w http.ResponseWriter, r *http.Request) {
+	var (
+		filter     = "WHERE to_tsvector('simple', u.name || ' ' || u.username) @@ plainto_tsquery('simple', $1) "
+		path       = r.URL.Query()
+		pagination = types.NewPagination(path)
+	)
+
+	if err := app.db.QueryRow("SELECT COUNT(u.id) FROM users u "+filter, path.Get("key")).Scan(&pagination.Total); err != nil {
+		app.error(w, err)
+		return
+	}
+
+	authors, err := app.queryUsers(filter+pagination.Query(), path.Get("key"))
+	if err != nil {
+		app.error(w, err)
+		return
+	}
+
+	app.view(w, r, "search", map[string]any{
+		"query":      r.URL.Query(),
+		"result":     authors,
 		"pagination": pagination.WithPages(),
 	})
 }

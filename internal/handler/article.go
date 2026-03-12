@@ -303,16 +303,16 @@ func (app *Handlers) queryArticles(r *http.Request, filter string, args ...any) 
 	defer rows.Close()
 
 	for rows.Next() {
-		var article types.Article
+		var a types.Article
 		if err = rows.Scan(
-			&article.Id, &article.UserId, &article.Title, &article.Slug,
-			&article.Excerpt, &article.Content, &article.Image, &article.Likes,
-			&article.CreatedAt, &article.UpdatedAt, &article.DeletedAt,
-			&article.User.Username, &article.User.Name, &article.User.Avatar, &article.Liked,
+			&a.Id, &a.UserId, &a.Title, &a.Slug,
+			&a.Excerpt, &a.Content, &a.Image, &a.Likes,
+			&a.CreatedAt, &a.UpdatedAt, &a.DeletedAt,
+			&a.User.Username, &a.User.Name, &a.User.Avatar, &a.Liked,
 		); err != nil {
 			return nil, err
 		}
-		list = append(list, article)
+		list = append(list, a)
 	}
 	return list, rows.Err()
 }

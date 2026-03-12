@@ -6,38 +6,56 @@
 {{ end }}
 
 {{define "content"}}
+{{$page := index . "page"}}
 {{$query := index . "query"}}
-{{$articles := index . "articles"}}
+{{$result := index . "result"}}
 {{$pagination := index . "pagination"}}
 
-<form id="search" action="/search">
-  <div class="input-group">
-    <i class="material-symbols-outlined">search</i>
-    <!-- prettier-ignore -->
-    <input 
-      type="search" name="key" 
-      placeholder="look for an article..." 
-      value="{{ $query.Get "key" }}" />
+<section id="search">
+  <div class="tabs">
+    <button data-tab="search-articles">
+      <div class="material-symbols-outlined">article</div>
+      <p>Articles</p>
+    </button>
+    <button data-tab="search-authors">
+      <div class="material-symbols-outlined">account_circle</div>
+      <p>Authors</p>
+    </button>
+    <button data-tab="search-comments">
+      <div class="material-symbols-outlined">comment</div>
+      <p>Comments</p>
+    </button>
   </div>
-  <div class="filters">
+
+  <form action="/search" id="search-articles">
     <div class="input-group">
+      <i class="material-symbols-outlined">search</i>
       <!-- prettier-ignore -->
-      <select name="sort">
-        {{if $sort := $query.Get "sort" }}
-            <option value="{{ $sort }}">Sort by {{ $sort }}</option>
-        {{end}}
-        <option value="newest">Sort by newest</option>
-        <option value="oldest">Sort by oldest</option>
-      </select>
+      <input 
+      type="search" name="key" 
+      placeholder="look article titles..." 
+      value="{{ $query.Get "key" }}" />
     </div>
-    <div class="input-group">
-      <select name="category">
-        <option value="all">All category</option>
-      </select>
-    </div>
-    <div class="input-group">
-      <!-- prettier-ignore -->
-      <select name="limit">
+
+    <div class="filters">
+      <div class="input-group">
+        <!-- prettier-ignore -->
+        <select name="sort">
+          {{if $sort := $query.Get "sort" }}
+              <option value="{{ $sort }}">Sort by {{ $sort }}</option>
+          {{end}}
+          <option value="newest">Sort by newest</option>
+          <option value="oldest">Sort by oldest</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <select name="category">
+          <option value="all">All category</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <!-- prettier-ignore -->
+        <select name="limit">
         {{if $pagination.Limit }}
           <option value="{{ $pagination.Limit }}" selected>{{ $pagination.Limit }} per page</option>
         {{end}}
@@ -47,20 +65,100 @@
         <option value="50">50 per page</option>
         <option value="80">80 per page</option>
       </select>
+      </div>
+      <button class="button sec">Search Article</button>
     </div>
-    <button class="button sec">Search</button>
-  </div>
-</form>
+  </form>
+  <form action="/search/authors" id="search-authors">
+    <div class="input-group">
+      <i class="material-symbols-outlined">account_circle</i>
+      <!-- prettier-ignore -->
+      <input 
+      type="search" name="key" 
+      placeholder="look author names..." 
+      value="{{ $query.Get "key" }}" />
+    </div>
 
-<section id="result">
+    <div class="filters">
+      <div class="input-group">
+        <!-- prettier-ignore -->
+        <select name="limit">
+        {{if $pagination.Limit }}
+          <option value="{{ $pagination.Limit }}" selected>{{ $pagination.Limit }} per page</option>
+        {{end}}
+        <option value="10">10 per page</option>
+        <option value="20">20 per page</option>
+        <option value="35">35 per page</option>
+        <option value="50">50 per page</option>
+        <option value="80">80 per page</option>
+      </select>
+      </div>
+      <button class="button sec">Search Author</button>
+    </div>
+  </form>
+  <form id="search-comments">
+    <p>Work in progress</p>
+  </form>
+</section>
+
+{{ if eq $page "/search" }}
+<section id="result-articles">
   <h3>We found {{ $pagination.Total }} articles</h3>
 
-  {{template "article_list" $articles}}
+  {{template "article_list" $result}}
 </section>
+{{ else if eq $page "/search/authors"}}
+<section id="result-authors">
+  <h3>We found {{ $pagination.Total }} authors</h3>
+
+  {{ range $result }}
+  <article>
+    <!-- prettier-ignore -->
+    <img
+      src="{{ avatar .Avatar | forwardslash }}"
+      referrerpolicy="no-referrer"
+      alt="{{ .Name }} profile avatar"
+    />
+    <div>
+      <a class="name" href="/u/@{{ .Username }}">{{ .Name }}</a>
+      <p class="username">@{{ .Username }}</p>
+      <p class="bio">{{ .Bio }}</p>
+
+      <button class="button">
+        <i class="material-symbols-outlined">mood_heart</i>
+        <span>Follow</span>
+      </button>
+    </div>
+  </article>
+  {{else}}
+  <div class="empty">
+    <i class="material-symbols-outlined">sentiment_stressed</i>
+    <h3>Whoops! No article found</h3>
+  </div>
+  {{ end }}
+</section>
+{{ end }}
 
 {{template "pagination" $pagination}}
 
 <script>
+  const searchtabs = document.querySelectorAll("#search .tabs button");
+  const searchforms = document.querySelectorAll("#search form");
+
+  for (const t of searchtabs) {
+    t.addEventListener("click", () => {
+      for (const tt of searchtabs) {
+        t == tt ? tt.classList.add("active") : tt.classList.remove("active");
+      }
+
+      for (const f of searchforms) {
+        f.id == t.getAttribute("data-tab")
+          ? f.classList.add("active")
+          : f.classList.remove("active");
+      }
+    });
+  }
+
   const selects = document.querySelectorAll(".filters select");
 
   // delete unselected option if its already picked
@@ -69,6 +167,19 @@
       if (select.options[i].value == select.options[0].value)
         select.options.remove(i);
     }
+  }
+
+  const path = window.location.pathname;
+
+  if (path == "/search") {
+    searchtabs[0].classList.add("active");
+    searchforms[0].classList.add("active");
+  } else if (path == "/search/authors") {
+    searchtabs[1].classList.add("active");
+    searchforms[1].classList.add("active");
+  } else {
+    searchtabs[2].classList.add("active");
+    searchforms[2].classList.add("active");
   }
 </script>
 {{ end }}

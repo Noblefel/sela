@@ -27,7 +27,7 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0 0.5rem;
 
       img {
         object-position: center;
@@ -84,15 +84,14 @@
     align-items: center;
     opacity: 0.75;
     height: 250px;
-    gap: 2rem;
+    gap: 1.25rem;
 
     i {
       font-size: 4rem;
     }
 
-    p {
+    h3 {
       font-style: italic;
-      font-size: 1.25rem;
     }
   }
 }
@@ -108,5 +107,14 @@
 
   100% {
     translate: 0;
+  }
+}
+
+@media (width <= 700px) {
+  .article-list {
+    .excerpt {
+      line-height: 1.35rem;
+      font-size: 0.85rem;
+    }
   }
 }

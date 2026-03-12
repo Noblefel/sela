@@ -2,18 +2,63 @@
 @import url("./pagination.css");
 
 main {
-  form#search {
+  #search {
     margin: 1rem 0 2rem 0;
+    overflow: hidden;
+
+    .tabs {
+      overflow: auto;
+      display: flex;
+      margin-bottom: -5px;
+
+      > * {
+        padding: 0.5rem 2rem;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: center;
+
+        background-color: transparent;
+        border: 0;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+
+        cursor: pointer;
+        font-size: 1rem;
+        color: rgba(0, 0, 0, 0.6);
+        font-weight: bold;
+      }
+
+      .active {
+        background-color: white;
+        color: rgba(0, 0, 0, 0.75);
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-bottom: 1px solid white;
+      }
+    }
+
+    form {
+      display: none;
+      padding: 1rem;
+      background-color: white;
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+
+      &.active {
+        display: block;
+      }
+    }
 
     input {
-      padding-left: 4.25rem;
+      padding-left: 4rem;
       border-radius: 35px;
-      font-size: 1.3rem;
+      font-size: 1.15rem;
     }
 
     .input-group i {
-      font-size: 2.25rem;
-      left: 1.25rem;
+      font-size: 1.9rem;
+      left: 1.12rem;
     }
 
     .filters {
@@ -38,10 +83,73 @@ main {
         border-radius: 40px;
         padding: 0.5rem 1rem;
       }
+    }
+  }
 
-      .space {
-        flex: 1;
-      }
+  #result-authors article {
+    display: flex;
+    gap: 1.25rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+    > img {
+      height: 70px;
+      width: 70px;
+      object-fit: cover;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .name {
+      margin-bottom: 15px;
+      text-decoration: none;
+      font-size: 1.2rem;
+      font-weight: bold;
+      opacity: 0.8;
+    }
+
+    .username {
+      font-weight: bold;
+      color: var(--sec);
+      font-size: 0.9rem;
+    }
+
+    .bio {
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+  }
+
+  #result-authors .empty {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.75;
+    height: 250px;
+    gap: 1.25rem;
+
+    i {
+      font-size: 4rem;
+    }
+
+    h3 {
+      font-style: italic;
+    }
+  }
+}
+
+@media (width <= 700px) {
+  main #result-authors article {
+    > img {
+      height: 50px;
+      width: 50px;
+    }
+
+    .bio {
+      line-height: 1.35rem;
+      font-size: 0.85rem;
     }
   }
 }

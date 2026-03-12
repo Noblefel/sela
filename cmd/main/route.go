@@ -15,6 +15,7 @@ func route() http.Handler {
 	mux := http.NewServeMux()
 
 	handle(mux, "GET /search", app.Search)
+	handle(mux, "GET /search/authors", app.SearchAuthor)
 	handle(mux, "GET /a/{slug}", app.ArticleShow)
 	handle(mux, "POST /articles", app.ArticlePost, auth)
 	handle(mux, "GET /articles/create", app.ArticleCreate, auth)

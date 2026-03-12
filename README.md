@@ -10,7 +10,6 @@ My attempt at a decent, fully-featured blogging app that is SEO friendly using G
 | Responsive UI                       | ✅  |
 | WYSIWYG editor                      | ✅  |
 | Search & Filtering                  | ✅  |
-| Search & Filtering (Authors)        | ⚒️  |
 | Offset Pagination                   | ✅  |
 | Cursor Pagination (Infinite scroll) |     |
 | Oauth (Google)                      | ✅  |
@@ -23,7 +22,7 @@ My attempt at a decent, fully-featured blogging app that is SEO friendly using G
 | Privacy settings                    | ✅  |
 | Add/update/manage comments          |     |
 | Add/update/manage likes             | ✅  |
-| Optimistic update like              | ✅  |
+| Optimistic update for like          | ✅  |
 | Add/update/manage saved             |     |
 | Add/update/manage tags              |     |
 | Add/update/manage followings        |     |
