@@ -16,7 +16,8 @@ My attempt at a decent, fully-featured blogging app that is SEO friendly using G
 | Image uploads                       | ✅  |
 | Sessions                            | ✅  |
 | Add/update/manage articles          | ✅  |
-| Articles soft delete & drafts       |     |
+| Articles drafts                     | ✅  |
+| Articles soft deletes               |     |
 | Add/update/manage profile           | ✅  |
 | Account settings                    | ✅  |
 | Privacy settings                    | ✅  |

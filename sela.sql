@@ -58,5 +58,15 @@ CREATE TABLE IF NOT EXISTS article_likes (
     FOREIGN KEY(article_id) REFERENCES articles(id) ON DELETE CASCADE
 );
  
+CREATE TABLE IF NOT EXISTS article_drafts (
+    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    user_id INT NOT NULL,
+    title VARCHAR(150) NOT NULL,
+    excerpt VARCHAR(500),
+    content TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+); 
 
 -- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public to sela; 

@@ -22,7 +22,11 @@ func route() http.Handler {
 	handle(mux, "GET /articles/{id}/edit", app.ArticleEdit, auth)
 	handle(mux, "POST /articles/{id}/update", app.ArticleUpdate, auth)
 	handle(mux, "POST /articles/{id}/delete", app.ArticleDelete, auth)
-	handle(mux, "POST /articles/{id}/like", app.ArticleLikeToggle, auth)
+	handle(mux, "POST /json/articles/{id}/like", app.ArticleLikeToggleJSON, auth)
+
+	handle(mux, "GET /json/articles/draft/{id}", app.ArticleDraftUseJSON, auth)
+	handle(mux, "POST /json/articles/draft", app.ArticleDraftPostJSON, auth, strict)
+	handle(mux, "POST /json/articles/draft/{id}/delete", app.ArticleDraftDeleteJSON, auth)
 
 	handle(mux, "GET /me", app.Me, auth)
 	handle(mux, "GET /me/favorites", app.MeFavorite, auth)

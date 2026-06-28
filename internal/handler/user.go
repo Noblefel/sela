@@ -218,7 +218,7 @@ func (app *Handlers) UserFavorite(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !user.ShowFavorites(app.auth(r)) {
+	if !user.ViewFavorites(app.auth(r)) {
 		http.Error(w, "no permission", http.StatusForbidden)
 		return
 	}

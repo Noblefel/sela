@@ -2,6 +2,8 @@
   display: grid;
   grid-template-columns: 2fr 8fr 2fr;
 
+  /* TODO: make navigation display normally as block instead of fixed/sticky */
+
   .nav-side {
     padding: 0.75rem;
     position: sticky;
@@ -117,10 +119,6 @@
 }
 
 @media (width <= 825px) {
-  :root {
-    font-size: 15px;
-  }
-
   .layout {
     display: block;
 

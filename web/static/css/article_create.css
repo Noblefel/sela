@@ -36,9 +36,7 @@ main {
   .actions {
     position: sticky;
     bottom: 1.5rem;
-
     display: flex;
-    justify-content: end;
     gap: 1em;
     z-index: 5;
     padding: 0.75rem;
@@ -47,8 +45,136 @@ main {
     border-radius: 12px;
     border: 2px solid rgba(0, 0, 0, 0.2);
 
+    .space {
+      flex: 1;
+    }
+
+    .draft {
+      background-color: rgba(0, 0, 0, 0.08);
+      border-color: rgba(0, 0, 0, 0.16);
+      color: rgba(0, 0, 0, 0.75);
+    }
+
     p {
       margin: auto 0;
+    }
+  }
+
+  form #dialog-draft {
+    width: 700px;
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+
+      p {
+        font-size: 0.9rem;
+        opacity: 0.75;
+      }
+
+      .button {
+        height: fit-content;
+      }
+    }
+
+    .draft-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+
+      .button {
+        font-size: 0.8rem;
+      }
+
+      .save {
+        background-color: color-mix(in srgb, forestgreen, white 20%);
+        border-color: forestgreen;
+        color: white;
+      }
+    }
+
+    ul {
+      padding: 0.5rem 0.5rem 0.5rem 1rem;
+      overflow-y: auto;
+      max-height: 450px;
+    }
+
+    ul article {
+      position: relative;
+      padding: 0.5rem 0.75rem 0.5rem 1rem;
+      min-height: 50px;
+      background-color: rgba(0, 0, 0, 0.04);
+      border-radius: 12px;
+      position: relative;
+      cursor: pointer;
+
+      .title {
+        font-size: 1rem;
+      }
+
+      .excerpt {
+        opacity: 0.9;
+        font-size: 0.75rem;
+        line-height: 1.15rem;
+      }
+
+      .stats {
+        margin-top: 5px;
+        display: flex;
+        gap: 1rem;
+
+        .item {
+          display: flex;
+          align-items: center;
+          gap: 0.35rem;
+        }
+
+        i {
+          font-size: 1.2rem;
+        }
+
+        p {
+          font-size: 0.8rem;
+        }
+      }
+
+      .button.delete {
+        padding: 0.25rem;
+        border: 0;
+        outline: 0;
+
+        position: absolute;
+        right: 0.5rem;
+        bottom: 0.5rem;
+      }
+
+      &:not(:last-of-type) {
+        margin-bottom: 1rem;
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -1rem;
+
+        width: 8px;
+        height: 100%;
+        background-color: var(--pri);
+        border-radius: 10px;
+        opacity: 0.4;
+      }
+
+      &:hover::after,
+      &.selected::after {
+        opacity: 1;
+      }
+
+      &.selected {
+        opacity: 1;
+        outline: 2px solid var(--sec);
+      }
     }
   }
 }

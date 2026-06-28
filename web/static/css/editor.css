@@ -118,3 +118,17 @@
     outline: 0;
   }
 }
+
+.editor-loading {
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  opacity: 0.75;
+
+  i {
+    font-size: 2rem;
+  }
+}

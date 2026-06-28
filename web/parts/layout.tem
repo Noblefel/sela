@@ -41,7 +41,6 @@
     {{ end }}
 
     <div class="background"></div>
-
     <div class="layout">
       <div class="nav-side">
         <div class="logo">
@@ -114,7 +113,7 @@
         {{ end }}
       </div>
     </div>
-    
+
     <script>
       const links = document.querySelectorAll(".layout nav a");
       const path = window.location.pathname;

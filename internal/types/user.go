@@ -26,7 +26,7 @@ func (u User) Authorize(auth *Auth) bool {
 	return auth != nil && u.Id == auth.Id
 }
 
-func (u User) ShowFavorites(auth *Auth) bool {
+func (u User) ViewFavorites(auth *Auth) bool {
 	return (auth != nil && u.Authorize(auth)) || u.ProfileFavoritesShow
 }
 

@@ -6,6 +6,7 @@
 {{ end }}
 
 {{define "content"}}
+{{$drafts := index . "drafts"}}
 <form action="/articles" method="POST" enctype="multipart/form-data">
   {{$form := index . "form"}}
 
@@ -58,15 +59,77 @@
       <span>Cancel</span>
     </button>
 
+    <div class="space"></div>
+
+    <button type="button" class="button draft" data-toggle="#dialog-draft">
+      <i class="material-symbols-outlined">save_as</i>
+      <span>Draft</span>
+    </button>
+
     <button type="submit" class="button sec">
       <i class="material-symbols-outlined">done</i>
       <span>Submit</span>
     </button>
   </div>
+
+  <dialog id="dialog-draft" class="dialog">
+    <div class="header">
+      <div class="left">
+        <h3>Drafts</h3>
+        <p>Your unfinished articles are stored here</p>
+      </div>
+      <button
+        type="button"
+        class="button sec close"
+        data-toggle="#dialog-draft"
+      >
+        Cancel
+      </button>
+    </div>
+    <div class="draft-actions">
+      <button type="button" class="button save" id="save-draft">
+        <i class="material-symbols-outlined">save_as</i>
+        Save current to draft
+      </button>
+      <button type="button" class="button" id="use-draft" disabled>
+        <i class="material-symbols-outlined">upload</i>
+        Use selected draft
+      </button>
+    </div>
+    <ul>
+      {{ range $drafts }}
+      <article onclick="draftClickEvent(this, '{{.Id}}')">
+        <h1 class="title">{{ .Title }}</h1>
+        <p class="excerpt">{{ .Excerpt }}</p>
+        <button
+          onclick="draftDelete(event, this, '{{ .Id }}')"
+          type="button"
+          class="button delete"
+        >
+          <i class="material-symbols-outlined">delete</i>
+        </button>
+        <div class="stats">
+          <div class="item">
+            <i class="material-symbols-outlined">auto_stories</i>
+            <p>4,000 character</p>
+          </div>
+          <div class="item">
+            <i class="material-symbols-outlined">schedule</i>
+            <p>15m read</p>
+          </div>
+        </div>
+      </article>
+      {{
+        end
+      }}
+    </ul>
+  </dialog>
 </form>
 
 <script>
   const form = document.querySelector("main form");
+  const title = form.querySelector("textarea[name=title]");
+  const excerpt = form.querySelector("textarea[name=excerpt]");
   const content = form.querySelector("#content");
   // hard coded this so i don't deal with global variable
   const editor = form.querySelector("#editor");
@@ -119,6 +182,157 @@
     input.value = "";
     input.files = null;
     img.classList.remove("preview");
+  }
+
+  const saveDraft = document.querySelector("#save-draft");
+  const useDraft = document.querySelector("#use-draft");
+  let selectedDraft = 0;
+
+  function draftClickEvent(e, id) {
+    for (const d of document.querySelectorAll("#dialog-draft article")) {
+      if (d != e) d.classList.remove("selected");
+    }
+    selectedDraft = id;
+    e.classList.add("selected");
+    useDraft.disabled = false;
+  }
+
+  useDraft.addEventListener("click", async () => {
+    useDraft.disabled = true;
+    saveDraft.disabled = true;
+    try {
+      if (!selectedDraft) {
+        toast("select from the draft list first", "error");
+        return;
+      }
+
+      const res = await fetch(`/json/articles/draft/${selectedDraft}`, {
+        headers: { "Content-Type": "application/json" },
+        method: "GET",
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+
+      title.value = data.draft.title;
+      excerpt.value = data.draft.excerpt;
+      // can't insertContent() because this file dont have the instance
+      editor.firstChild.innerHTML = data.draft.content;
+      content.value = data.draft.content;
+      document.querySelector("#dialog-draft button.close").click();
+      toast(data.message, "success");
+    } catch (error) {
+      toast(error.message, "error");
+      console.log(error);
+    } finally {
+      useDraft.disabled = false;
+      saveDraft.disabled = false;
+    }
+  });
+
+  saveDraft.addEventListener("click", async () => {
+    useDraft.disabled = true;
+    saveDraft.disabled = true;
+
+    try {
+      const draft = {
+        title: title.value,
+        excerpt: excerpt.value,
+        content: editor.firstChild.getHTML(),
+      };
+
+      if (!draft.title) {
+        toast("you must put a title", "error");
+        return;
+      }
+
+      const res = await fetch("/json/articles/draft", {
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+        body: JSON.stringify(draft),
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+
+      const data = await res.json();
+      insertDraft(draft, data.id);
+      toast(data.message, "success");
+
+      title.value = "";
+      excerpt.value = "";
+      editor.firstChild.innerHTML = "";
+      // can't clearContent() because this file dont have the instance
+      content.value = "";
+      deleteimg();
+    } catch (error) {
+      toast(error.message, "error");
+      console.log(error);
+    } finally {
+      useDraft.disabled = false;
+      saveDraft.disabled = false;
+    }
+  });
+
+  function insertDraft(draft, id) {
+    const title = document.createElement("h1");
+    title.textContent = draft.title;
+    title.classList.add("title");
+
+    const excerpt = document.createElement("p");
+    excerpt.textContent = draft.excerpt;
+    excerpt.classList.add("excerpt");
+
+    const newdraft = document.createElement("article");
+    newdraft.append(title);
+    newdraft.append(excerpt);
+
+    // TBA
+    newdraft.insertAdjacentHTML(
+      "beforeend",
+      ` <button
+          onclick="draftDelete(event, this, ${id})"
+          type="button" class="button delete">
+          <i class="material-symbols-outlined">delete</i>
+        </button>
+        <div class="stats">
+        <div class="item">
+          <i class="material-symbols-outlined">auto_stories</i>
+          <p>4,000 character</p>
+        </div>
+        <div class="item">
+          <i class="material-symbols-outlined">schedule</i>
+          <p>15m read</p>
+        </div>
+      </div>`
+    );
+
+    newdraft.onclick = () => draftClickEvent(newdraft, id);
+    document.querySelector("#dialog-draft ul").prepend(newdraft);
+  }
+
+  async function draftDelete(event, e, id) {
+    event.stopPropagation();
+    useDraft.disabled = true;
+    saveDraft.disabled = true;
+    try {
+      const res = await fetch(`/json/articles/draft/${id}/delete`, {
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      toast(data.message, "success");
+      e.parentElement.remove();
+      useDraft.disabled = true;
+      selectedDraft = 0;
+    } catch (error) {
+      toast(error.message, "error");
+      console.log(error);
+    } finally {
+      useDraft.disabled = false;
+      saveDraft.disabled = false;
+    }
   }
 </script>
 {{ end }}

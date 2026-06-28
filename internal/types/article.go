@@ -52,3 +52,33 @@ func (f *FormArticle) Validate() string {
 	f.Content = content
 	return ""
 }
+
+type ArticleDraft struct {
+	Id        int    `json:"id"`
+	UserId    int    `json:"user_id"`
+	Title     string `json:"title"`
+	Excerpt   string `json:"excerpt"`
+	Content   string `json:"content"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+func (a ArticleDraft) Authorize(auth *Auth) bool {
+	return auth != nil && auth.Id == a.UserId
+}
+
+type FormArticleDraft struct {
+	Title   string `json:"title"`
+	Excerpt string `json:"excerpt"`
+	Content string `json:"content"` // sanitized
+}
+
+func (f *FormArticleDraft) Validate() string {
+	if f.Title == "" {
+		return "title is empty"
+	}
+	if len(f.Title) > 150 || len(f.Excerpt) > 500 {
+		return "title or except is too long"
+	}
+	return ""
+}

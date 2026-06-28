@@ -85,7 +85,7 @@
     await new Promise((res) => setTimeout(res, 400));
 
     try {
-      const res = await fetch("/articles/{{$article.Id}}/like", {
+      const res = await fetch("/json/articles/{{$article.Id}}/like", {
         headers: { "Content-Type": "application/json" },
         method: "POST",
       });

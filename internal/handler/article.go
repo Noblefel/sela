@@ -47,7 +47,12 @@ func (app *Handlers) ArticleShow(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Handlers) ArticleCreate(w http.ResponseWriter, r *http.Request) {
-	app.view(w, r, "article_create", map[string]any{})
+	drafts, err := app.queryArticleDrafts("WHERE user_id = $1 ORDER BY created_at DESC", app.auth(r).Id)
+	if err != nil {
+		app.error(w, err)
+		return
+	}
+	app.view(w, r, "article_create", map[string]any{"drafts": drafts})
 }
 
 func (app *Handlers) ArticlePost(w http.ResponseWriter, r *http.Request) {
@@ -221,7 +226,8 @@ func (app *Handlers) ArticleDelete(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (app *Handlers) ArticleLikeToggle(w http.ResponseWriter, r *http.Request) {
+// API
+func (app *Handlers) ArticleLikeToggleJSON(w http.ResponseWriter, r *http.Request) {
 	article, err := app.queryArticle("WHERE id = $1", r.PathValue("id"))
 	if err != nil {
 		app.error(w, err)
