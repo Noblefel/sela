@@ -7,6 +7,10 @@ import (
 	"github.com/kennygrant/sanitize"
 )
 
+// from github.com/kennygrant/sanitize with just added "style" attribute to allow text alignment
+var allowedTags = []string{"h1", "h2", "h3", "h4", "h5", "h6", "div", "span", "hr", "p", "br", "b", "i", "strong", "em", "ol", "ul", "li", "a", "img", "pre", "code", "blockquote", "article", "section"}
+var allowedAttributes = []string{"id", "class", "src", "href", "title", "alt", "name", "rel", "style"}
+
 type Article struct {
 	Id        int
 	UserId    int
@@ -17,6 +21,8 @@ type Article struct {
 	Image     string
 	Likes     int
 	Liked     bool
+	Views     int
+	Comments  int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt time.Time
@@ -42,7 +48,7 @@ func (f *FormArticle) Validate() string {
 	if len(f.Title) > 150 || len(f.Excerpt) > 500 {
 		return "title or except is too long"
 	}
-	content, err := sanitize.HTMLAllowing(f.Content)
+	content, err := sanitize.HTMLAllowing(f.Content, allowedTags, allowedAttributes)
 	if err != nil {
 		return "content is malformed"
 	}

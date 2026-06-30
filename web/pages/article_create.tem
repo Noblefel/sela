@@ -139,8 +139,8 @@
 
     content.value = editor.firstChild.getHTML();
     if (content.value.length < 100) {
-      toast("content is too short", "error");
-      return;
+      // toast("content is too short", "error");
+      // return;
     }
 
     form.submit();

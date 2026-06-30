@@ -10,6 +10,7 @@
 {{$auth := index . "auth"}}
 {{$article := index . "article"}}
 {{$created := $article.CreatedAt }}
+{{$comments := index . "comments"}}
 <header>
   {{if $article.Image}}
   <img
@@ -33,7 +34,7 @@
       </div>
       <div>
         <i class="material-symbols-outlined">visibility</i>
-        <p>532 views</p>
+        <p>{{ $article.Views }} views</p>
       </div>
       <div>
         <i class="material-symbols-outlined">calendar_month</i>
@@ -48,10 +49,12 @@
       <i class="material-symbols-outlined">favorite</i>
       <span>{{ if $article.Likes }}{{ $article.Likes }}{{ else }}Be the first{{ end }}</span>
     </button>
-
+    <!-- prettier-ignore -->
     <button class="button">
       <i class="material-symbols-outlined">chat</i>
-      <span>Be the first</span>
+      <a href="#comments" style="color: inherit; text-decoration: none;">
+        {{ if $article.Comments }}{{ $article.Comments }}{{ else }}Be the first{{ end }}
+      </a>
     </button>
 
     <button class="button sec">
@@ -74,6 +77,67 @@
 
 <section id="content" class="editor-content">
   {{ $article.Content | html }}
+</section>
+
+<hr class="divider" />
+
+<section id="comments">
+  {{if $auth}}
+  <form action="">
+    <h1>Leave a comment</h1>
+
+    <div class="input-group">
+      <div class="me">
+        <img
+          src="{{ avatar $auth.Avatar | forwardslash }}"
+          alt="me"
+          width="40px"
+          height="40px"
+          alt="your profile avatar"
+        />
+        <h4>{{ $auth.Name }}</h4>
+      </div>
+
+      <!-- prettier-ignore -->
+      <textarea
+      rows="1"
+      name="comment"
+      placeholder="Write your comment here..."
+      required maxlength="1999"></textarea>
+    </div>
+
+    <button class="button sec" type="submit">Add comment</button>
+  </form>
+  {{ end }}
+
+  <p class="comments-count">{{ $article.Comments }} comments found</p>
+
+  <ul>
+    {{range $comments}}
+    <li>
+      <p class="comment">{{ .Comment }}</p>
+      <div class="profile">
+        <!-- prettier-ignore -->
+        <img
+          src="{{ avatar .User.Avatar | forwardslash }}"
+          alt="{{.User.Name}} profile avatar"
+        />
+        <a href="/u/@{{.User.Username}}">
+          {{ .User.Name }}
+          {{ if eq $article.UserId .User.Id}}(author){{ end }}
+        </a>
+        <p class="date">{{ .CreatedAt | since }}</p>
+      </div>
+    </li>
+    {{else}}
+    <div class="not-found">
+      <i class="material-symbols-outlined">family_star</i>
+      <p>Be the first to comment</p>
+    </div>
+    {{
+      end
+    }}
+  </ul>
 </section>
 
 <script>
@@ -114,4 +178,74 @@
     }
   }
 </script>
+
+{{if $auth}}
+<script>
+  const formComment = document.querySelector("#comments form");
+  const commentList = document.querySelector("#comments ul");
+  const buttonComment = formComment.querySelector("button");
+  const comment = formComment.querySelector("textarea");
+
+  formComment.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    buttonComment.disabled = true;
+
+    try {
+      if (!comment.value) {
+        toast("you must put a comment", "error");
+        return;
+      }
+
+      const res = await fetch("/json/articles/{{ $article.Id }}/comment", {
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ comment: comment.value }),
+        method: "POST",
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+
+      const data = await res.json();
+      toast(data.message, "success");
+      insertComment(data.id);
+
+      comment.value = "";
+      comment.dispatchEvent(new Event("input")); // trigger resize
+    } catch (error) {
+      toast(error.message, "error");
+      console.log(error);
+    } finally {
+      buttonComment.disabled = false;
+    }
+  });
+
+  function insertComment(id) {
+    const p = document.createElement("p");
+    p.textContent = comment.value;
+    p.classList.add("comment");
+
+    const li = document.createElement("li");
+    li.append(p);
+
+    li.insertAdjacentHTML(
+      "beforeend",
+      `<div class="profile">
+        <img
+          src="{{ avatar $auth.Avatar | forwardslash }}"
+          alt="my profile avatar"
+        />
+        <a href="/me">
+          {{ $auth.Name }}
+          {{ if eq $article.UserId $auth.Id}}(author){{end}}
+        </a>
+        <p class="date">Just now</p>
+      </div>`
+    );
+
+    if (commentList.firstElementChild.className == "not-found") {
+      commentList.firstElementChild.remove();
+    }
+    commentList.prepend(li);
+  }
+</script>
+{{ end }}
 {{ end }}

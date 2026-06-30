@@ -28,6 +28,8 @@ func route() http.Handler {
 	handle(mux, "POST /json/articles/draft", app.ArticleDraftPostJSON, auth, strict)
 	handle(mux, "POST /json/articles/draft/{id}/delete", app.ArticleDraftDeleteJSON, auth)
 
+	handle(mux, "POST /json/articles/{id}/comment", app.CommentPostJSON, auth, strict)
+
 	handle(mux, "GET /me", app.Me, auth)
 	handle(mux, "GET /me/favorites", app.MeFavorite, auth)
 

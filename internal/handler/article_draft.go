@@ -32,9 +32,7 @@ func (app *Handlers) ArticleDraftPostJSON(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	resp := map[string]any{"id": id, "message": "article saved into draft"}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	app.json(w, "article saved into draft", map[string]any{"id": id})
 }
 
 func (app *Handlers) ArticleDraftUseJSON(w http.ResponseWriter, r *http.Request) {
@@ -49,9 +47,7 @@ func (app *Handlers) ArticleDraftUseJSON(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	resp := map[string]any{"draft": draft, "message": "draft loaded"}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	app.json(w, "draft loaded", map[string]any{"draft": draft})
 }
 
 func (app *Handlers) ArticleDraftDeleteJSON(w http.ResponseWriter, r *http.Request) {
@@ -71,8 +67,7 @@ func (app *Handlers) ArticleDraftDeleteJSON(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]any{"message": "draft deleted"})
+	app.json(w, "draft deleted", nil)
 }
 
 func (app *Handlers) queryArticleDraft(filter string, args ...any) (*types.ArticleDraft, error) {

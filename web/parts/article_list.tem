@@ -20,7 +20,7 @@
       <span>·</span>
       <p>{{ .CreatedAt.Format "02 January 2006" }}</p>
       <span>·</span>
-      <p>532 views</p>
+      <p>{{ .Views }} views</p>
     </div>
 
     <p class="excerpt">{{.Excerpt}}</p>
@@ -36,7 +36,7 @@
 
       <button class="button">
         <i class="material-symbols-outlined">comment</i>
-        <span>Be the first</span>
+        <span>{{if .Comments}}{{.Comments}}{{else}}Be the first{{ end }}</span>
       </button>
       <button class="button sec">Read article</button>
     </div>

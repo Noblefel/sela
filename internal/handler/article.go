@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/Noblefel/sela/internal/types"
+	"github.com/Noblefel/sela/internal/util"
 )
 
 func (app *Handlers) ArticleShow(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +44,23 @@ func (app *Handlers) ArticleShow(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	app.view(w, r, "article_show", map[string]any{"article": article})
+	comments, err := app.queryComments("WHERE c.article_id = $1 ORDER BY c.created_at DESC", article.Id)
+	if err != nil {
+		app.error(w, err)
+		return
+	}
+
+	util.Background(func() {
+		_, err := app.db.Exec("UPDATE articles SET views = views + 1 WHERE id = $1", article.Id)
+		if err != nil {
+			app.error(w, err)
+		}
+	})
+
+	app.view(w, r, "article_show", map[string]any{
+		"article":  article,
+		"comments": comments,
+	})
 }
 
 func (app *Handlers) ArticleCreate(w http.ResponseWriter, r *http.Request) {
@@ -271,7 +288,7 @@ func (app *Handlers) queryArticle(filter string, args ...any) (*types.Article, e
 
 	query := `
 		SELECT id, slug, user_id, title, COALESCE(excerpt, ''), 
-			content, COALESCE(image, ''), likes, created_at, updated_at
+			content, COALESCE(image, ''), likes, views, comments, created_at, updated_at
 		FROM articles `
 
 	return article, app.db.QueryRow(query+filter, args...).Scan(
@@ -283,6 +300,8 @@ func (app *Handlers) queryArticle(filter string, args ...any) (*types.Article, e
 		&article.Content,
 		&article.Image,
 		&article.Likes,
+		&article.Views,
+		&article.Comments,
 		&article.CreatedAt,
 		&article.UpdatedAt,
 	)
@@ -291,7 +310,7 @@ func (app *Handlers) queryArticle(filter string, args ...any) (*types.Article, e
 func (app *Handlers) queryArticles(r *http.Request, filter string, args ...any) ([]types.Article, error) {
 	var list []types.Article
 	query := `SELECT a.id, a.user_id, a.title, a.slug, COALESCE(a.excerpt, ''), a.content, COALESCE(a.image, ''), 
-		a.likes, a.created_at, a.updated_at, a.deleted_at, u.username, u.name, COALESCE(u.avatar, ''), 
+		a.likes, a.views, a.comments, a.created_at, a.updated_at, a.deleted_at, u.username, u.name, COALESCE(u.avatar, ''), 
 		al.user_id IS NOT NULL
 		FROM articles a LEFT JOIN users u ON a.user_id = u.id
 		LEFT JOIN article_likes al ON a.id = al.article_id AND al.user_id = `
@@ -312,8 +331,8 @@ func (app *Handlers) queryArticles(r *http.Request, filter string, args ...any) 
 		var a types.Article
 		if err = rows.Scan(
 			&a.Id, &a.UserId, &a.Title, &a.Slug,
-			&a.Excerpt, &a.Content, &a.Image, &a.Likes,
-			&a.CreatedAt, &a.UpdatedAt, &a.DeletedAt,
+			&a.Excerpt, &a.Content, &a.Image, &a.Likes, &a.Views,
+			&a.Comments, &a.CreatedAt, &a.UpdatedAt, &a.DeletedAt,
 			&a.User.Username, &a.User.Name, &a.User.Avatar, &a.Liked,
 		); err != nil {
 			return nil, err

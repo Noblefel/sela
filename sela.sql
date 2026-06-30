@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS articles (
     content TEXT NOT NULL,
     image VARCHAR,
     likes INT DEFAULT 0,
+    views INT DEFAULT 0,
+    comments INT DEFAULT 0,
 
     profile_favorites_show BOOLEAN DEFAULT TRUE,
     profile_comments_show BOOLEAN DEFAULT TRUE,
@@ -67,6 +69,18 @@ CREATE TABLE IF NOT EXISTS article_drafts (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+); 
+
+CREATE TABLE IF NOT EXISTS comments (
+    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    user_id INT NOT NULL,
+    article_id INT NOT NULL,
+    comment VARCHAR(1999) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY(article_id) REFERENCES articles(id) ON DELETE CASCADE
 ); 
 
 -- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public to sela; 

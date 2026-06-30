@@ -1,5 +1,9 @@
 @import url("./editor.css");
 
+body > .background {
+  display: none;
+}
+
 main {
   header {
     padding-top: 1rem;
@@ -77,7 +81,102 @@ main {
   }
 
   #content {
-    margin: 5rem 0;
+    margin: 5rem 0 3rem 0;
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  hr.divider {
+    width: 400px;
+    max-width: 80%;
+    margin: 3rem auto 2rem auto;
+    border-color: var(--pri);
+    opacity: 0.5;
+  }
+
+  #comments {
+    img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .me {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    textarea {
+      padding: 5rem 1.5rem 1.5rem 2rem;
+      font-size: 1rem;
+    }
+
+    form button {
+      display: flex;
+      justify-self: end;
+    }
+
+    .comments-count {
+      margin: 2rem 0 1rem 0;
+    }
+
+    ul {
+      padding: 0;
+      margin-top: 3rem;
+      list-style: none;
+
+      li {
+        margin-bottom: 5rem;
+      }
+
+      .comment {
+        margin-bottom: 1rem;
+        text-align: justify;
+      }
+
+      .profile {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      a {
+        font-size: 0.85rem;
+        font-weight: bold;
+        text-decoration: none;
+      }
+
+      .date {
+        opacity: 0.75;
+        font-size: 0.8rem;
+      }
+    }
+
+    .not-found {
+      padding: 5rem 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+
+      i {
+        font-size: 3rem;
+      }
+
+      p {
+        font-size: 1.25rem;
+      }
+    }
   }
 }
 

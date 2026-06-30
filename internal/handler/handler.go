@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -39,7 +40,7 @@ func (app *Handlers) Home(w http.ResponseWriter, r *http.Request) {
 
 	month := time.Now().AddDate(0, -1, 0)
 
-	articlesMonthly, err := app.queryArticles(r, "WHERE a.created_at > $1 LIMIT 2", month)
+	articlesMonthly, err := app.queryArticles(r, "WHERE a.created_at > $1 ORDER BY a.views DESC LIMIT 2", month)
 	if err != nil {
 		app.error(w, err)
 		return
@@ -166,6 +167,20 @@ func (app *Handlers) view(w http.ResponseWriter, r *http.Request, page string, d
 	if err := app.render.View(w, page, data); err != nil {
 		fmt.Fprint(w, err.Error())
 		log.Output(2, err.Error())
+	}
+}
+
+// for error response use the app.error for now
+func (app *Handlers) json(w http.ResponseWriter, message string, data map[string]any) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if data == nil {
+		data = make(map[string]any)
+	}
+	data["message"] = message
+
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		app.error(w, err)
 	}
 }
 
