@@ -66,12 +66,10 @@
     }
 
     .liked {
-      background-color: color-mix(in srgb, crimson, transparent 90%);
-      border-color: color-mix(in srgb, crimson, transparent 50%);
-
+      /* animation wont fire for some reason if i merge the selector */
       i {
         color: crimson;
-        animation: like 0.4s ease-in;
+        animation: like 0.6s ease-in;
         font-variation-settings: "FILL" 1;
       }
     }
@@ -82,12 +80,12 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    opacity: 0.75;
+    opacity: 0.7;
     height: 250px;
     gap: 1.25rem;
 
     i {
-      font-size: 4rem;
+      font-size: 3.75rem;
     }
 
     h3 {
@@ -102,7 +100,7 @@
   }
 
   40% {
-    scale: 1.33;
+    scale: 1.55;
   }
 
   100% {

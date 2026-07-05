@@ -10,7 +10,12 @@ type Comment struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
-	User User
+	User    User
+	Article Article
+}
+
+func (c Comment) Authorize(auth *Auth) bool {
+	return auth != nil && auth.Id == c.UserId
 }
 
 type FormComment struct {

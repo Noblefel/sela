@@ -44,7 +44,7 @@
   {{else}}
   <div class="empty">
     <i class="material-symbols-outlined">sentiment_stressed</i>
-    <h3>Whoops! No article found</h3>
+    <p>Whoops! No article found</p>
   </div>
   {{ end }}
 </div>

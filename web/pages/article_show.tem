@@ -116,7 +116,7 @@
     {{range $comments}}
     <li>
       <p class="comment">{{ .Comment }}</p>
-      <div class="profile">
+      <div class="bottom-flex">
         <!-- prettier-ignore -->
         <img
           src="{{ avatar .User.Avatar | forwardslash }}"
@@ -127,6 +127,18 @@
           {{ if eq $article.UserId .User.Id}}(author){{ end }}
         </a>
         <p class="date">{{ .CreatedAt | since }}</p>
+
+        <div style="flex: 1"></div>
+
+        {{if .Authorize $auth}}
+        <button
+          class="button"
+          type="button"
+          onclick="deleteComment(this, '{{ .Id }}')"
+        >
+          <i class="material-symbols-outlined">delete</i>
+        </button>
+        {{ end }}
       </div>
     </li>
     {{else}}
@@ -228,7 +240,7 @@
 
     li.insertAdjacentHTML(
       "beforeend",
-      `<div class="profile">
+      `<div class="bottom-flex">
         <img
           src="{{ avatar $auth.Avatar | forwardslash }}"
           alt="my profile avatar"
@@ -238,6 +250,14 @@
           {{ if eq $article.UserId $auth.Id}}(author){{end}}
         </a>
         <p class="date">Just now</p>
+        <div style="flex: 1"></div>
+        <button
+          class="button"
+          type="button"
+          onclick="deleteComment(this, ${id})"
+        >
+          <i class="material-symbols-outlined">delete</i>
+        </button>
       </div>`
     );
 
@@ -245,6 +265,28 @@
       commentList.firstElementChild.remove();
     }
     commentList.prepend(li);
+  }
+
+  async function deleteComment(button, id) {
+    if (!confirm("are you sure you want to delete this comment?")) return;
+    button.disabled = true;
+    try {
+      const res = await fetch(`/json/comments/${id}/delete`, {
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+
+      const data = await res.json();
+      toast(data.message, "success");
+      button.parentElement.parentElement.remove();
+    } catch (error) {
+      toast(error.message, "error");
+      console.log(error);
+    } finally {
+      button.disabled = false;
+    }
   }
 </script>
 {{ end }}

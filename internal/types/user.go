@@ -19,6 +19,8 @@ type User struct {
 
 	ProfileFavoritesShow bool
 	ProfileCommentsShow  bool
+
+	ArticlesMade int
 }
 
 func (u User) Authorize(auth *Auth) bool {
@@ -28,6 +30,10 @@ func (u User) Authorize(auth *Auth) bool {
 
 func (u User) ViewFavorites(auth *Auth) bool {
 	return (auth != nil && u.Authorize(auth)) || u.ProfileFavoritesShow
+}
+
+func (u User) ViewComments(auth *Auth) bool {
+	return (auth != nil && u.Authorize(auth)) || u.ProfileCommentsShow
 }
 
 type FormUser struct {

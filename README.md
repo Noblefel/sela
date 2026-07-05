@@ -15,19 +15,21 @@ My attempt at a decent, fully-featured blogging app that is SEO friendly using G
 | Oauth (Google)                      | ✅  |
 | Image uploads                       | ✅  |
 | Sessions                            | ✅  |
-| Add/update/manage articles          | ✅  |
+| Articles                            | ✅  |
 | Articles drafts                     | ✅  |
 | Articles soft deletes               |     |
-| Add/update/manage profile           | ✅  |
+| Profiles                            | ✅  |
 | Account settings                    | ✅  |
 | Privacy settings                    | ✅  |
-| Add/update/manage comments          |     |
-| Add/update/manage likes             | ✅  |
+| Comments                            | ✅  |
+| Comment replies                     | ⚒️  |
+| Likes                               | ✅  |
 | Optimistic update for like          | ✅  |
-| Add/update/manage saved             |     |
-| Add/update/manage tags              |     |
-| Add/update/manage followings        |     |
-| Add/update/manage groups            |     |
+| Saved                               |     |
+| Tags                                |     |
+| Followings                          |     |
+| Groups                              |     |
+| Recommendations system              |     |
 | Notifications system                |     |
 | Sending emails                      | ✅  |
 | Admin Panel                         |     |

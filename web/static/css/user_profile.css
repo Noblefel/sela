@@ -66,6 +66,67 @@ main {
     display: flex;
     gap: 1rem;
   }
+
+  #comments {
+    ul {
+      padding: 0;
+      list-style: none;
+
+      li {
+        padding: 3rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .top-flex {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      a {
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1.1rem;
+        opacity: 0.85;
+      }
+
+      .date {
+        opacity: 0.75;
+        font-size: 0.85rem;
+        font-weight: bold;
+      }
+
+      .button {
+        padding: 0.15rem;
+        background-color: transparent;
+        border: 0;
+      }
+
+      .comment {
+        text-align: justify;
+        font-size: 1rem;
+      }
+    }
+
+    .empty {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0.7;
+      height: 250px;
+      gap: 1.25rem;
+
+      i {
+        font-size: 3.75rem;
+      }
+
+      h3 {
+        font-style: italic;
+      }
+    }
+  }
 }
 
 @media (width < 850px) {

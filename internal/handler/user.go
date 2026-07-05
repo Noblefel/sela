@@ -30,7 +30,7 @@ func (app *Handlers) UserProfile(w http.ResponseWriter, r *http.Request) {
 	var (
 		pagination = types.NewPagination(r.URL.Query())
 		queryList  = "WHERE a.user_id = $1 ORDER BY a.created_at DESC "
-		queryTotal = "SELECT COUNT(a.id) FROM articles a WHERE a.user_id = $1"
+		queryTotal = "SELECT COUNT(id) FROM articles WHERE user_id = $1"
 	)
 
 	// TODO: change this redundant JOIN query
@@ -44,6 +44,8 @@ func (app *Handlers) UserProfile(w http.ResponseWriter, r *http.Request) {
 		app.error(w, err)
 		return
 	}
+
+	user.ArticlesMade = pagination.Total
 
 	app.view(w, r, "user_profile", map[string]any{
 		"user":       user,
@@ -227,6 +229,7 @@ func (app *Handlers) UserFavorite(w http.ResponseWriter, r *http.Request) {
 		pagination = types.NewPagination(r.URL.Query())
 		queryList  = "WHERE al.user_id = $1 ORDER BY a.created_at DESC "
 		queryTotal = "SELECT COUNT(user_id) FROM article_likes WHERE user_id = $1"
+		queryMade  = "SELECT COUNT(id) FROM articles WHERE user_id = $1"
 	)
 
 	articles, err := app.queryArticles(r, queryList+pagination.Query(), user.Id)
@@ -240,9 +243,67 @@ func (app *Handlers) UserFavorite(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := app.db.QueryRow(queryMade, user.Id).Scan(&user.ArticlesMade); err != nil {
+		app.error(w, err)
+		return
+	}
+
 	app.view(w, r, "user_profile", map[string]any{
 		"user":       user,
 		"articles":   articles,
+		"pagination": pagination.WithPages(),
+	})
+}
+
+func (app *Handlers) MeComments(w http.ResponseWriter, r *http.Request) {
+	r.SetPathValue("username", app.auth(r).Username)
+	app.UserComments(w, r)
+}
+
+func (app *Handlers) UserComments(w http.ResponseWriter, r *http.Request) {
+	username := strings.TrimPrefix(r.PathValue("username"), "@")
+	user, err := app.queryUser("WHERE username = $1", username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			w.WriteHeader(http.StatusNotFound)
+			app.view(w, r, "user_404", map[string]any{})
+			return
+		}
+		app.error(w, err)
+		return
+	}
+
+	if !user.ViewComments(app.auth(r)) {
+		http.Error(w, "no permission", http.StatusForbidden)
+		return
+	}
+
+	var (
+		pagination = types.NewPagination(r.URL.Query())
+		queryList  = "WHERE c.user_id = $1 ORDER BY c.created_at DESC "
+		queryTotal = "SELECT COUNT(id) FROM comments WHERE user_id = $1"
+		queryMade  = "SELECT COUNT(id) FROM articles WHERE user_id = $1"
+	)
+
+	comments, err := app.queryComments(queryList+pagination.Query(), user.Id)
+	if err != nil {
+		app.error(w, err)
+		return
+	}
+
+	if err := app.db.QueryRow(queryTotal, user.Id).Scan(&pagination.Total); err != nil {
+		app.error(w, err)
+		return
+	}
+
+	if err := app.db.QueryRow(queryMade, user.Id).Scan(&user.ArticlesMade); err != nil {
+		app.error(w, err)
+		return
+	}
+
+	app.view(w, r, "user_profile", map[string]any{
+		"user":       user,
+		"comments":   comments,
 		"pagination": pagination.WithPages(),
 	})
 }
