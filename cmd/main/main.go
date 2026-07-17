@@ -59,12 +59,12 @@ func setConfigAndDB() {
 		panic(err)
 	}
 	f.Close()
-	// dsn := fmt.Sprintf(`user=%s password=%s dbname=%s sslmode=disable`,
-	// 	config.DB_User,
-	// 	config.DB_Password,
-	// 	config.DB_Name,
-	// )
-	dsn := fmt.Sprintf(`user=postgres dbname=sela sslmode=disable`)
+	dsn := fmt.Sprintf(`user=%s password=%s dbname=%s sslmode=disable`,
+		config.DB_User,
+		config.DB_Password,
+		config.DB_Name,
+	)
+	// dsn := fmt.Sprintf(`user=postgres dbname=sela sslmode=disable`)
 	if conn, err = sql.Open("postgres", dsn); err != nil {
 		panic(err)
 	}

@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
     bio VARCHAR(250),
     avatar VARCHAR,
     admin BOOLEAN NOT NULL DEFAULT false,
-
+    profile_favorites_show BOOLEAN DEFAULT TRUE,
+    profile_comments_show BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW() 
 );
@@ -22,9 +23,6 @@ CREATE TABLE IF NOT EXISTS articles (
     likes INT DEFAULT 0,
     views INT DEFAULT 0,
     comments INT DEFAULT 0,
-
-    profile_favorites_show BOOLEAN DEFAULT TRUE,
-    profile_comments_show BOOLEAN DEFAULT TRUE,
 
     deleted_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
